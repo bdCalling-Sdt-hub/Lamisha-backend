@@ -13,24 +13,25 @@ class AdminintextInfoController extends Controller
     public function intekInof(Request $request)
     {
         $query = Parsonal::orderBy('id', 'desc');
-        if ($request->filled('first_name')) {
-            $query->where('first_name', 'like', "%{$request->first_name}%");
+        
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
         }
-        if ($request->filled('last_name')) {
-            $query->where('last_name', 'like', "%{$request->last_name}%");
-        }
-        if ($request->filled('email')) {
-            $query->where('email', 'like', "%{$request->email}%");
-        }
-
+    
         $parsonal_data = $query->paginate(8);
-
-        if ($parsonal_data) {
+    
+        if ($parsonal_data->count() > 0) {
             return response()->json($parsonal_data);
         } else {
             return response()->json(["message" => "Record not found"], 400);
         }
     }
+    
 
     public function singleIntek_info($id)
     {
@@ -49,12 +50,12 @@ class AdminintextInfoController extends Controller
             $parsonal_data->status = $request->status;
             $parsonal_data->save();
             if ($parsonal_data) {
-                return response()->json('Parsonal status update success', 200);
+                return response()->json(['status'=>200, 'Parsonal status update success', 200]);
             } else {
-                return response()->json(['message' => 'Status update fail'], 400);
+                return response()->json(['status'=>400,'message' => 'Status update fail'], 400);
             }
         } else {
-            return response()->json(["message" => "Record not found"], 400);
+            return response()->json(['status'=>400,"message" => "Record not found"], 400);
         }
 
     }
@@ -65,12 +66,12 @@ class AdminintextInfoController extends Controller
             $buisness_data->status = $request->status;
             $buisness_data->save();
             if ($buisness_data) {
-                return response()->json('Parsonal status update success', 200);
+                return response()->json(['status'=>200,'Parsonal status update success', 200]);
             } else {
-                return response()->json(['message' => 'Status update fail'], 400);
+                return response()->json(['status'=>400,'message' => 'Status update fail'], 400);
             }
         } else {
-            return response()->json(["message" => "Record not found"], 400);
+            return response()->json(['status'=>400,"message" => "Record not found"], 400);
         }
 
     }
@@ -82,13 +83,12 @@ class AdminintextInfoController extends Controller
             $appoinment_data->status = $request->status;
             $appoinment_data->save();
             if ($appoinment_data) {
-                return response()->json('Parsonal status update success', 200);
+                return response()->json(['status'=>200,'Parsonal status update success', 200]);
             } else {
-                return response()->json(['message' => 'Status update fail'], 400);
+                return response()->json(['status'=>400,'message' => 'Status update fail'], 400);
             }
         } else {
-            return response()->json(["message" => "Record not found"], 400);
+            return response()->json(['status'=>200, "message" => "Record not found"], 400);
         }
-
     }
 }

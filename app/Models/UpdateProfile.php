@@ -8,4 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class UpdateProfile extends Model
 {
     use HasFactory;
+    protected $fillable = [
+
+        'first_name',
+        'last_name', 
+        'phone',           
+        'buisness_name', 
+        'buisness_address', 
+        'phone',           
+        'image', 
+        'email',                
+    ];
 }

@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tiers', function (Blueprint $table) {
+        Schema::create('prices', function (Blueprint $table) {
             $table->id();
-            $table->string('tyer_name');
-            $table->json('protocols')->nullable();
-            $table->json('standing_order')->nullable(); 
-            $table->json('policies')->nullable();
-            $table->json('consents')->nullable();
+            $table->integer('tier_id');
+            $table->integer('price_1');
+            $table->integer('price_2');
+            $table->string('duration');
+            $table->json('service');
+
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tiers');
+        Schema::dropIfExists('prices');
     }
 };

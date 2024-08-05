@@ -9,7 +9,7 @@ class TermsConditionsController extends Controller
 {
     public function terms_index()
     {
-        $terms = TermsConditions::all();
+        $terms = TermsConditions::first();
         if ($terms) {
             return response()->json(['status'=>'200', 'data'=>$terms]);
         }else{
@@ -28,10 +28,20 @@ class TermsConditionsController extends Controller
     }
 
     // Create a new record
-    public function store(Request $request)
+    public function storeOrUpdate(Request $request)
     {
-        $terms = TermsConditions::create($request->all());
-        return response()->json(['status' => 201, 'data' => $terms]);
+        $id = $request->input('id');
+        $about = TermsConditions::find($id);
+
+        if ($about) {
+            // Record exists, so update it
+            $about->update($request->all());
+            return response()->json(['status' => 200, 'data' => $about, 'message' => 'Data updated successfully']);
+        } else {
+            // Record does not exist, so create a new one
+            $about = TermsConditions::create($request->all());
+            return response()->json(['status' => 201, 'data' => $about, 'message' => 'Data created successfully']);
+        }
     }
 
     // Update an existing record by ID

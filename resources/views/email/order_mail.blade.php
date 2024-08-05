@@ -14,6 +14,7 @@
     <li>Email: {{ $input['email'] }}</li>
     <li>Phone: {{ $input['phone'] }}</li>
     <li>Shipping Address: {{ $input['shiping_address'] }}</li>
+    <li>Shipping Address 2: {{ $input['shiping_address1'] }}</li>
     <li>Item Description: {{ $input['item_description'] }}</li>
     <li>Item Number: {{ $input['item_number'] }}</li>
     <li>Price: ${{ $input['price'] }}</li>
@@ -21,6 +22,7 @@
     <li>Vendor: {{ $input['vendor'] }}</li>
     <li>Comments: {{ $input['comments'] }}</li>
     <li>Print Name: {{ $input['print_name'] }}</li>
+    <li>Shiping: {{$input['shiping']}} </li>
 </ul>
 
 </body>

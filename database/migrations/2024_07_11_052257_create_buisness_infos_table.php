@@ -21,8 +21,7 @@ return new class extends Migration
             $table->string('business_malpractice_insurance');            
             $table->string('business_registe_red_secretary_state');
             $table->string('what_state_your_business_registered');
-            $table->string('owns_the_company');
-            $table->string('what_type_of_entity');
+            $table->string('owns_the_company');            
             $table->string('direct_service_business');
             $table->string('what_state_anicipate_service');
             $table->string('tier_service_interrested');

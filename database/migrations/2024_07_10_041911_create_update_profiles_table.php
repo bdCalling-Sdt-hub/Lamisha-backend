@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('buisness_name')->nullable();
             $table->string('buisness_address')->nullable();
             $table->string('image')->nullable();
-            $table->string('email')->unique();
+            $table->string('email')->nullable();
             $table->timestamps();
         });
     }

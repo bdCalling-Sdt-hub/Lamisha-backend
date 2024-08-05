@@ -17,7 +17,6 @@ class BuisnessInfo extends Model
         'business_registe_red_secretary_state',
         'what_state_your_business_registered',
         'owns_the_company',
-        'what_type_of_entity',
         'direct_service_business',
         'what_state_anicipate_service',
         'tier_service_interrested',

@@ -24,11 +24,14 @@ return new class extends Migration
             $table->string('current_cpr_certification');
             $table->string('blood_bron_pathogen_certificaton');
             $table->string('training_hipaa_osha');
-            $table->string('management_service_aggriment');
-            $table->string('nda');
-            $table->string('deligation_aggriment');
-            $table->string('ach_fomr');
-            $table->string('member_ship_contact');           
+            $table->string('management_service_aggriment')->nullable();
+            $table->string('nda')->nullable();
+            $table->string('deligation_aggriment')->nullable();
+            $table->string('ach_fomr')->nullable();
+            $table->string('member_ship_contact')->nullable(); 
+            $table->string('date')->nullable();
+            $table->string('time')->nullable();
+
 
             $table->timestamps();
         });

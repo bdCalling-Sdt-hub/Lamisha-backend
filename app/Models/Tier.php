@@ -10,10 +10,15 @@ class Tier extends Model
     use HasFactory;
     
     protected $fillable = [
-        'tier1',
-        'tier2',
-        'tier3',
-        'tier4',
-        'tiers_type',                
+
+        'tyer_name',
+        'protocols', 
+        'standing_order',               
+        'policies',
+        'consents',
     ];
+    public function price()
+    {
+        return $this->hasMany(Price::class);
+    }
 }

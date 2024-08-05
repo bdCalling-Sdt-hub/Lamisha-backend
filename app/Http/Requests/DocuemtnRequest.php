@@ -31,12 +31,12 @@ class DocuemtnRequest extends FormRequest
             'current_cpr_certification' => 'required|file',
             'blood_bron_pathogen_certificaton' => 'required|file',
             'training_hipaa_osha' => 'required|file',
-            'management_service_aggriment' => 'required|file',
-            'nda' => 'required|file',
-            'deligation_aggriment' => 'required|file',
-            'ach_fomr' => 'required|file',
-            'appoinment_date' => 'required',
-            'appoinment_time' => 'required',
+            // 'management_service_aggriment' => 'required|file',
+            // 'nda' => 'required|file',
+            // 'deligation_aggriment' => 'required|file',
+            // 'ach_fomr' => 'required|file',
+            // 'appoinment_date' => 'required',
+            // 'appoinment_time' => 'required',
         ];   
     }
 }

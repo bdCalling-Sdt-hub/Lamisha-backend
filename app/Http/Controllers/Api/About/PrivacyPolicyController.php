@@ -9,9 +9,9 @@ class PrivacyPolicyController extends Controller
 {
     public function privacy_index()
     {
-        $privacy = Privacy::all();
+        $privacy = Privacy::first();
         if ($privacy) {
-            return response()->json(['status'=>'200', 'data'=>$privacy]);
+            return response()->json(['status'=>200, 'data'=>$privacy]);
         }else{
             return response()->json(['status'=>'401', 'message'=>'Data not found']);
         }
@@ -30,8 +30,18 @@ class PrivacyPolicyController extends Controller
     // Create a new record
     public function store(Request $request)
     {
-        $privacy = Privacy::create($request->all());
-        return response()->json(['status' => 201, 'data' => $privacy]);
+        $id = $request->input('id');
+        $about = Privacy::find($id);
+
+        if ($about) {
+            // Record exists, so update it
+            $about->update($request->all());
+            return response()->json(['status' => 200, 'data' => $about, 'message' => 'Data updated successfully']);
+        } else {
+            // Record does not exist, so create a new one
+            $about = Privacy::create($request->all());
+            return response()->json(['status' => 201, 'data' => $about, 'message' => 'Data created successfully']);
+        }
     }
 
     // Update an existing record by ID

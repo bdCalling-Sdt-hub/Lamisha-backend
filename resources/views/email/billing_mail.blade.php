@@ -68,8 +68,7 @@
         </div>
         <li>Email: {{$email}}</li>
         <li>Payment Date: {{ $payment_date }}</li>
-        <li>Appointment Date: {{ $appoinment_date }}</li>
-        <li>Appointment Time: {{ $appoinment_time }}</li>        
+       
     </div>
 
 

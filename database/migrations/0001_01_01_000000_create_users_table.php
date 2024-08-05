@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('user_type');
             $table->string('phone')->nullable();
-            $table->string('status')->default('pending');
+            $table->string('status')->default('active');
             $table->string('verify_email')->nullable();
             $table->string('buisness_name')->nullable();
             $table->string('buisness_address')->nullable();

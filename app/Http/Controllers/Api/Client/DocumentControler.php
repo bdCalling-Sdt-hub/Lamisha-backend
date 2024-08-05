@@ -27,14 +27,14 @@ class DocumentControler extends Controller
         if ($request->hasFile('onoarding_fee')) {
             $onoarding_fee_path = $request->file('onoarding_fee')->store('PaymentHistory', 'public');
         } else {
-            return response()->json(['message' => 'onboarding fee upload failed'], 400);
+            return response()->json(['status'=>400,'message' => 'onboarding fee upload failed'], 400);
         }
         
         $ach_payment_path = null;
         if ($request->hasFile('ach_payment')) {
             $ach_payment_path = $request->file('ach_payment')->store('PaymentHistory', 'public');
         } else {
-            return response()->json(['message' => 'ach payment upload failed'], 400);
+            return response()->json(['status'=>400,'message' => 'ach payment upload failed'], 400);
         }
 
         $payment_date = $request->payment_date;
@@ -43,20 +43,22 @@ class DocumentControler extends Controller
         if ($request->hasFile('vendor_ordering')) {
             $vendor_ordering_path = $request->file('vendor_ordering')->store('PaymentHistory', 'public');
         } else {
-            return response()->json(['message' => 'vendor ordering upload failed'], 400);
+            return response()->json(['status'=>400, 'message' => 'vendor ordering upload failed'], 400);
         }
 
-        $appoinment_date = $request->appoinment_date;
-        $appoinment_time = $request->appoinment_time;
+        // $appoinment_date = $request->appoinment_date;
+        // $appoinment_time = $request->appoinment_time;
 
-        Mail::to($admin_mail)->send(new BillingMail($email, $onoarding_fee_path, $ach_payment_path, $payment_date, $vendor_ordering_path, $appoinment_date, $appoinment_time));
-        return response()->json('sending your mail successfully');
+        Mail::to($admin_mail)->send(new BillingMail($email, $onoarding_fee_path, $ach_payment_path, $payment_date, $vendor_ordering_path));
+        return response()->json(['status'=>200,'sending your mail successfully']);
     }
 
     public function store_document(Request $request)
     {
         $auth_user = Auth::user();
         $user_id = $auth_user->id;
+
+
         
         $files = [
             'resume',
@@ -68,11 +70,11 @@ class DocumentControler extends Controller
             'current_cpr_certification',
             'blood_bron_pathogen_certificaton',
             'training_hipaa_osha',
-            'management_service_aggriment',
-            'nda',
-            'deligation_aggriment',
-            'ach_fomr',
-            'member_ship_contact',
+            // 'management_service_aggriment',
+            // 'nda',
+            // 'deligation_aggriment',
+            // 'ach_fomr',
+            // 'member_ship_contact',
         ];
     
         $document = new ClientDocument();
@@ -83,14 +85,45 @@ class DocumentControler extends Controller
                 $path = $request->file($file)->store('Client_documents', 'public');
                 $document->$file = $path;
             } else {
-                return response()->json(['message' => "$file upload failed"], 400);
+                return response()->json(['status'=>400,'message' => "$file upload failed"], 400);
             }
         }
     
         $document->save();
     
-        return response()->json(['message' => 'Documents uploaded successfully'], 200);
+        return response()->json(['status'=>200, 'message'=>'Upload document successfull', 'data'=> $document], 200);
     }
+
+    public function update_document(Request $request)
+    {
+        $auth_user = Auth::user();
+        $user_id = $auth_user->id;        
+        $files = [
+            'management_service_aggriment',
+            'nda',
+            'deligation_aggriment',
+            'ach_fomr',
+            'member_ship_contact',
+        ];
+    
+        $document =  ClientDocument::find($request->id);
+        $document->user_id = $user_id;
+    
+        foreach ($files as $file) {
+            if ($request->hasFile($file)) {
+                $path = $request->file($file)->store('Client_documents', 'public');
+                $document->$file = $path;
+            } else {
+                return response()->json(['status'=>400,'message' => "$file upload failed"], 400);
+            }
+        }
+    
+        $document->save();
+    
+        return response()->json(['status'=>200, 'data' => $document], 200);
+    }
+
+
 
     public function show_user_documet(Request $request)
     {
@@ -103,19 +136,19 @@ class DocumentControler extends Controller
         $all_data = $query->paginate(8);
       
         if($all_data){
-           return response()->json(['status'=>'200', 'data' => $all_data], 200);
+           return response()->json(['status'=>200, 'data' => $all_data], 200);
         }else{
-           return response()->json(['status'=>'200', 'message' => 'Record not found'], 200);
+           return response()->json(['status'=>200, 'message' => 'Record not found'], 200);
         }
     }
     public function singel_user_documet($id)
     {
-        $singel_data = ClientDocument::where('user_id', $id)->first();
+        $singel_data = ClientDocument::where('id', $id)->with('user')->first();
       
         if($singel_data){
-           return response()->json(['status'=>'200', 'data' => $singel_data], 200);
+           return response()->json(['status'=>200, 'data' => $singel_data], 200);
         }else{
-           return response()->json(['status'=>'200', 'message' => 'Record not found'], 200);
+           return response()->json(['status'=>200, 'message' => 'Record not found'], 200);
         }
     }
 
@@ -125,11 +158,23 @@ class DocumentControler extends Controller
         $client_id->status = $request->status;
         $client_id->save();
         if($client_id){
-            return response()->json(['status'=> '200','message'=> 'status update success']);
+            return response()->json(['status'=> 200,'message'=> 'status update success']);
 
         }else{
-            return response()->json(['status'=> '500','message'=> 'status update faile']);
+            return response()->json(['status'=> 500,'message'=> 'status update faile']);
         }
+    }
+
+    public function updateDocumentAppoinment(Request $request){
+        $document = ClientDocument::find($request->id);
+        $document->date = $request->date;
+        $document->time = $request->time;
+        $document->save();
+        if(! $document->save()){
+            return response()->json(['status'=>400,'message'=> 'Appoinment status'],400);
+        }
+        return response()->json(['status'=> 200,'message'=> 'Success fully your appoinmet shedule']);
+
     }
 
 

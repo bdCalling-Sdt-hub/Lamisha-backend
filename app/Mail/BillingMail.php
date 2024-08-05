@@ -19,18 +19,18 @@ class BillingMail extends Mailable
     public $ach_payment_path;
     public $payment_date;
     public $vendor_ordering_path;
-    public $appoinment_date;
-    public $appoinment_time;
+    // public $appoinment_date;
+    // public $appoinment_time;
 
-    public function __construct($email, $onoarding_fee_path, $ach_payment_path, $payment_date, $vendor_ordering_path, $appoinment_date, $appoinment_time)
+    public function __construct($email, $onoarding_fee_path, $ach_payment_path, $payment_date, $vendor_ordering_path)
     {
         $this->email = $email;
         $this->onoarding_fee_path = $onoarding_fee_path;
         $this->ach_payment_path = $ach_payment_path;
         $this->payment_date = $payment_date;
         $this->vendor_ordering_path = $vendor_ordering_path;
-        $this->appoinment_date = $appoinment_date;
-        $this->appoinment_time = $appoinment_time;
+        // $this->appoinment_date = $appoinment_date;
+        // $this->appoinment_time = $appoinment_time;
     }
 
     /**
@@ -59,8 +59,8 @@ class BillingMail extends Mailable
                       ->with([
                           'email' => $this->email,
                           'payment_date' => $this->payment_date,
-                          'appoinment_date' => $this->appoinment_date,
-                          'appoinment_time' => $this->appoinment_time,
+                        //   'appoinment_date' => $this->appoinment_date,
+                        //   'appoinment_time' => $this->appoinment_time,
                       ]);
 
         if ($this->onoarding_fee_path) {

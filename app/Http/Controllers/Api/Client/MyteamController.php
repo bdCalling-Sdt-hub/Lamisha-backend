@@ -20,14 +20,14 @@ class MyteamController extends Controller
         if ($request->hasFile('license_certificate_number')) {
             $license_certificate_path = $request->file('license_certificate_number')->store('Team', 'public');
         } else {
-            return response()->json(['message' => 'license_certificate_number upload failed'], 400);
+            return response()->json(['status'=>400, 'message' => 'license_certificate_number upload failed'], 400);
         }
 
         $addisional_certificate = null;
         if ($request->hasFile('addisional_certificate')) {
             $addisional_certificate_path = $request->file('addisional_certificate')->store('Team', 'public');
         } else {
-            return response()->json(['message' => 'addisional_certificate upload failed'], 400);
+            return response()->json(['status'=>200, 'message' => 'addisional_certificate upload failed'], 400);
         }
 
         $teame = new MyTeame();
@@ -42,9 +42,9 @@ class MyteamController extends Controller
         $teame->addisional_certificate = $addisional_certificate_path;
         $teame->save();
         if($teame){
-            return response()->json(['data' => $teame], 200); 
+            return response()->json([ 'status'=>200,  'message' => 'Teame add successfull'], 200); 
         }else{
-            return response()->json(['message' => 'Add teame faile'], 200);  
+            return response()->json(['status'=>400, 'message' => 'Add teame faile'], 400);  
         }       
     }
 
@@ -66,7 +66,7 @@ class MyteamController extends Controller
    
         $my_teame = MyTeame::where('id', $id)->first();
         if( $my_teame ){
-            return response()->json(['data'=> $my_teame], 200);
+            return response()->json(['status'=>200,'data'=> $my_teame], 200);
         }else{  
             return response()->json(['message'=> 'Record not found'], 400);
         }
@@ -81,7 +81,7 @@ class MyteamController extends Controller
     
         if (!$remove_teame_member) {
             return response()->json([
-                'status' => 'error',
+                'status' => 404,
                 'message' => 'Record not found',
             ], 404);
         }
@@ -106,7 +106,7 @@ class MyteamController extends Controller
         MyTeame::where('id', $id)->delete();
     
         return response()->json([
-            'status' => 'success',
+            'status' => 200,
             'message' => 'My teame Record deleted successfully',
         ]);
     }
@@ -125,9 +125,9 @@ class MyteamController extends Controller
         $all_data = $query->paginate(8);
       
         if($all_data){
-           return response()->json(['status'=>'200', 'data' => $all_data], 200);
+           return response()->json(['status'=>200, 'data' => $all_data], 200);
         }else{
-           return response()->json(['status'=>'200', 'message' => 'Record not found'], 200);
+           return response()->json(['status'=>200, 'message' => 'Record not found'], 200);
         }
     }
     public function singel_team_member($id)
@@ -135,9 +135,9 @@ class MyteamController extends Controller
         $singel_data = MyTeame::where('user_id', $id)->first();
       
         if($singel_data){
-           return response()->json(['status'=>'200', 'data' => $singel_data], 200);
+           return response()->json(['status'=>200, 'data' => $singel_data], 200);
         }else{
-           return response()->json(['status'=>'200', 'message' => 'Record not found'], 200);
+           return response()->json(['status'=>200, 'message' => 'Record not found'], 200);
         }
     }
 
@@ -148,13 +148,13 @@ class MyteamController extends Controller
             $client_id->status = $request->status;
             $client_id->save();
             if($client_id){
-                return response()->json(['status'=> '200','message'=> 'status update success']);
+                return response()->json(['status'=> 200,'message'=> 'status update success']);
     
             }else{
-                return response()->json(['status'=> '500','message'=> 'status update faile']);
+                return response()->json(['status'=> 500,'message'=> 'status update faile']);
             }
         }else{
-            return response()->json(['status'=> '400','message'=> 'Record not found']);
+            return response()->json(['status'=> 400,'message'=> 'Record not found']);
         }
     }
 

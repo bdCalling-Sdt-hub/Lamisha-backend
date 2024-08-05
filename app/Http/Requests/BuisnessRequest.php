@@ -30,7 +30,6 @@ class BuisnessRequest extends FormRequest
             'business_registe_red_secretary_state'=>'required',
             'what_state_your_business_registered'=>'required',
             'owns_the_company'=>'required',
-            'what_type_of_entity'=>'required',
             'direct_service_business'=>'required',
             'what_state_anicipate_service'=>'required',
             'tier_service_interrested'=>'required',
