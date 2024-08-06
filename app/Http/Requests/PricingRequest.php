@@ -24,6 +24,7 @@ class PricingRequest extends FormRequest
         return [           
             'price_1'=>'required',
             'price_2'=>'required',
+            'pricing_type'=> 'required',
             'duration'=>'required',
             'service'=>'required',
         ];

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('tier_id');
             $table->integer('price_1');
             $table->integer('price_2');
+            $table->string('pricing_type');
             $table->string('duration');
             $table->json('service');
 

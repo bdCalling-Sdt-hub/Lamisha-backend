@@ -143,7 +143,7 @@ class UserController extends Controller
             return response()->json($validator->errors(), 400);
         } else {
             $user->update(['password' => Hash::make($request->password)]);
-            return response()->json(['status'=>200,'message' => 'Password reset successfully'], 200);
+            return response()->json(['status'=>200,'message' => 'Password reset successfully','data'=> $user], 200);
         }
     }
 

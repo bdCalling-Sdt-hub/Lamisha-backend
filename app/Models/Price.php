@@ -14,6 +14,7 @@ class Price extends Model
         'tier_id',
         'price_1',
         'price_2',
+        'pricing_type',
         'duration',
         'service',
         

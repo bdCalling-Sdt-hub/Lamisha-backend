@@ -128,11 +128,12 @@ Route::middleware(['user', 'auth:api'])->group(function () {
 });
 
 //======================== Admin and User Both Access ====================//
-Route::middleware(['user_admin', 'auth:api'])->group(function () {
-    Route::get('/show-tiear', [TierController::class, 'show_tiear']);
+Route::middleware(['user_admin', 'auth:api'])->group(function () {    
     Route::get('/vendor', [VendorController::class, 'AdminVendor_index']);
     Route::get('/ehr', [EHRController::class, 'EHR_index']);
     Route::get('/faith', [FaithExamController::class, 'FithExam_index']);
+    Route::get('/show-tiear', [TierController::class, 'show_tiear']);
+    Route::get('/client-tiear', [TierController::class, 'client_tier']);
 });
 
 
@@ -153,3 +154,4 @@ Route::get('/terems', [TermsConditionsController::class, 'terms_index']);
 Route::get('/faq', [FAqController::class, 'faq_index']);
 Route::get('/show-covered', [CoveredController::class, 'index']); 
 Route::get('/pricing', [PricingController::class, 'Index']);
+Route::get('/show-tiear', [TierController::class, 'show_tiear']);

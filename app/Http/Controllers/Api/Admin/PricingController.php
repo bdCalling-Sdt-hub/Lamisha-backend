@@ -9,13 +9,18 @@ use App\Models\Tier;
 use App\Http\Requests\PricingRequest;
 class PricingController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $tiers = Tier::with('price')->orderBy('id', 'desc')->get();
+        $query = Tier::with('price')->orderBy('id', 'desc');
         
-        if($tiers->isEmpty()){
-            return response()->json(['status' => 201, 'message' => 'Record not found']);
+        if ($request->filled('pricing_type')) {
+            $query->whereHas('price', function($q) use ($request) {
+                $q->where('pricing_type', 'like', "%{$request->pricing_type}%");
+            });
         }
+    
+        // Execute the query to get results
+        $tiers = $query->get();
         
         // Decode the service attribute for each tier's price
         foreach($tiers as $tier) {
@@ -26,6 +31,7 @@ class PricingController extends Controller
         
         return response()->json(['status' => 200, 'data' => $tiers]);
     }
+    
     
     
     
@@ -42,6 +48,7 @@ class PricingController extends Controller
         $addPriceing->tier_id = $addTiear->id;
         $addPriceing->price_1 = $request->price_1;
         $addPriceing->price_2 = $request->price_2;
+        $addPriceing->pricing_type = $request->pricing_type;
         $addPriceing->duration = $request->duration;
         $addPriceing->service = json_encode($request->service);
         $addPriceing->save();
@@ -62,6 +69,7 @@ class PricingController extends Controller
         $Priceing = Price::where('tier_id',$request->id)->first();       
         $Priceing->price_1 = $request->price_1 ? : $Priceing->price_1;
         $Priceing->price_2 = $request->price_2 ? : $Priceing->price_2;
+        $Priceing->pricing_type = $request->pricing_type ? : $Priceing->pricing_type;
         $Priceing->duration = $request->duration? : $Priceing->duration;
         $Priceing->service = json_encode($request->service);
         $Priceing->save();
