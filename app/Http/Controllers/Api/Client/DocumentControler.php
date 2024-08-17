@@ -12,8 +12,19 @@ use App\Models\ClientDocument;
 use Auth;
 use App\Models\User;
 
+use App\Notifications\DocumentNotification;
+
 class DocumentControler extends Controller
 {
+
+    /*
+    In this page show notification 
+
+    * Show Notifications 
+    * Billing maile
+    * document upload
+    * update document
+    */
     public function billing(Request $request)
     {
         // Administrator email
@@ -54,74 +65,97 @@ class DocumentControler extends Controller
     }
 
     public function store_document(Request $request)
-    {
-        $auth_user = Auth::user();
-        $user_id = $auth_user->id;
+{
+   
+    $auth_user = Auth::user();
+     $user_id = $auth_user->id;
 
+    // Define the list of files
+    $files = [
+        'resume',
+        'license_certification',
+        'libability_insurnce',
+        'buisness_formations_doc',
+        'enform',
+        'currrent_driver_license',
+        'current_cpr_certification',
+        'blood_bron_pathogen_certificaton',
+        'training_hipaa_osha',
+    ];
 
-        
-        $files = [
-            'resume',
-            'license_certification',
-            'libability_insurnce',
-            'buisness_formations_doc',
-            'enform',
-            'currrent_driver_license',
-            'current_cpr_certification',
-            'blood_bron_pathogen_certificaton',
-            'training_hipaa_osha',
-            // 'management_service_aggriment',
-            // 'nda',
-            // 'deligation_aggriment',
-            // 'ach_fomr',
-            // 'member_ship_contact',
-        ];
-    
+    // Check if the document already exists for the user
+    $document = ClientDocument::where('user_id', $user_id)->first();
+
+    if ($document) {
+        // Unlink existing files
+        foreach ($files as $file) {
+            if (isset($document->$file) && \Storage::disk('public')->exists($document->$file)) {
+                \Storage::disk('public')->delete($document->$file);
+            }
+        }
+    } else {
+        // Create a new document record if it doesn't exist
         $document = new ClientDocument();
         $document->user_id = $user_id;
-    
-        foreach ($files as $file) {
-            if ($request->hasFile($file)) {
-                $path = $request->file($file)->store('Client_documents', 'public');
-                $document->$file = $path;
-            } else {
-                return response()->json(['status'=>400,'message' => "$file upload failed"], 400);
-            }
-        }
-    
-        $document->save();
-    
-        return response()->json(['status'=>200, 'message'=>'Upload document successfull', 'data'=> $document], 200);
     }
 
-    public function update_document(Request $request)
-    {
-        $auth_user = Auth::user();
-        $user_id = $auth_user->id;        
-        $files = [
-            'management_service_aggriment',
-            'nda',
-            'deligation_aggriment',
-            'ach_fomr',
-            'member_ship_contact',
-        ];
-    
-        $document =  ClientDocument::find($request->id);
-        $document->user_id = $user_id;
-    
-        foreach ($files as $file) {
-            if ($request->hasFile($file)) {
-                $path = $request->file($file)->store('Client_documents', 'public');
-                $document->$file = $path;
-            } else {
-                return response()->json(['status'=>400,'message' => "$file upload failed"], 400);
-            }
+    // Process the uploaded files
+    foreach ($files as $file) {
+        if ($request->hasFile($file)) {
+            $path = $request->file($file)->store('Client_documents', 'public');
+            $document->$file = $path;
         }
-    
-        $document->save();
-    
-        return response()->json(['status'=>200, 'data' => $document], 200);
     }
+
+    // Save the document record
+    $document->save();
+
+    // Return a success response
+    return response()->json(['status' => 200, 'message' => 'Upload document successful', 'data' => $document], 200);
+}
+
+
+public function update_document(Request $request)
+{
+    $new_data = Auth::user();
+    $user_id = $new_data->id;        
+    $files = [
+        'management_service_aggriment',
+        'nda',
+        'deligation_aggriment',
+        'ach_fomr',
+        'member_ship_contact',
+    ];
+
+    // Find the document by ID
+    $document = ClientDocument::find($request->id);
+    if (!$document) {
+        return response()->json(['status' => 400, 'message' => 'Document not found']);
+    }
+
+    // Update the document's user ID
+    $document->user_id = $user_id;
+
+    // Process file uploads
+    foreach ($files as $file) {
+        if ($request->hasFile($file)) {
+            $path = $request->file($file)->store('Client_documents', 'public');
+            $document->$file = $path;
+        } else {
+            return response()->json(['status' => 400, 'message' => "$file upload failed"], 400);
+        }
+    }
+
+    // Save the updated document
+    $document->save();
+
+    // Send notification to the user
+    $new_data->notify(new DocumentNotification('Uploaded new document', $new_data));
+
+    // Return response
+    return response()->json(['status' => 200, 'data' => $document], 200);
+}
+
 
 
 
@@ -141,6 +175,10 @@ class DocumentControler extends Controller
            return response()->json(['status'=>200, 'message' => 'Record not found'], 200);
         }
     }
+
+   
+    
+    
     public function singel_user_documet($id)
     {
         $singel_data = ClientDocument::where('id', $id)->with('user')->first();
@@ -166,16 +204,40 @@ class DocumentControler extends Controller
     }
 
     public function updateDocumentAppoinment(Request $request){
-        $document = ClientDocument::find($request->id);
+         $auth_user = auth()->user()->id;
+         if(!$auth_user){
+            return response()->json(['status' => 400, 'message' => 'Unauthrize user'], 400);
+         }
+         $documentId = ClientDocument::where('user_id',$auth_user)->first();
+
+         if(!$documentId){
+            return response()->json(['status' => 400, 'message' => 'You have not document'], 400);
+         }
+
+        $document = ClientDocument::find($documentId->id);
+    
+        // Update the document details
         $document->date = $request->date;
         $document->time = $request->time;
-        $document->save();
-        if(! $document->save()){
-            return response()->json(['status'=>400,'message'=> 'Appoinment status'],400);
+    
+        // Save the document
+        if (!$document->save()) {
+            return response()->json(['status' => 500, 'message' => 'Failed to update appointment'], 500);
         }
-        return response()->json(['status'=> 200,'message'=> 'Success fully your appoinmet shedule']);
-
+    
+        return response()->json(['status' => 200, 'message' => 'Appointment successfully scheduled']);
     }
+
+    public function checkStatus()
+    {
+       $authUser = auth()->user()->id;
+        $check = ClientDocument::where('user_id', $authUser)->where('status','approved')->first();
+        if(!$check){
+            return response()->json(['status'=>200, 'message'=>'Do not approve your document', 'data'=>$check],400);
+        }
+        return response()->json(['status'=>200, 'message'=>'Approve your document', 'data'=> $check]);
+    }
+    
 
 
     

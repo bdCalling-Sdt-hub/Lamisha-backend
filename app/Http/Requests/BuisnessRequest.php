@@ -24,6 +24,7 @@ class BuisnessRequest extends FormRequest
         return [
             'parsonal_id'=>'required',
             'buisness_name'=>'required',
+            'client_type'=>'required',
             'buisness_address'=>'required',            
             'how_long_time_buisness'=>'required',
             'business_malpractice_insurance'=>'required',

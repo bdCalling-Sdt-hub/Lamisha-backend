@@ -33,6 +33,7 @@ Route::post('/register', [UserController::class, 'register']);
 Route::middleware(['admin', 'auth:api'])->group(function () {
       
     Route::post('/profile-update', [UserController::class, 'edit_profile_update']);
+    Route::post('/admin-update/{id}', [UserController::class, 'adminUpdate']);
     Route::delete('/user-delete/{id}', [UserController::class, 'delete_user']);
     Route::resource('covered', CoveredController::class);    
 
@@ -63,11 +64,14 @@ Route::middleware(['admin', 'auth:api'])->group(function () {
     Route::post('/parsonal-status', [AdminintextInfoController::class, 'update_parsonal_status']);
     Route::post('/bisness-status', [AdminintextInfoController::class, 'update_buisness_status']);
     Route::post('/appoinment-status', [AdminintextInfoController::class, 'update_appoinment_status']);
+    Route::get('/notification', [AdminintextInfoController::class, 'getUserNotifications']);
+    Route::get('/update-notification/{id}', [AdminintextInfoController::class, 'updateNotification']);
 
     //============================ Client Document =====================//
     Route::get('/user-document', [DocumentControler::class, 'show_user_documet']);
     Route::get('/singel_user_documet/{id}', [DocumentControler::class, 'singel_user_documet']);
     Route::post('/client-document-status', [DocumentControler::class, 'client_document_status']);
+   
 
     //========================= User management ========================//
     Route::get('/user-management', [UserController::class, 'update_profile_all_user']);
@@ -75,12 +79,13 @@ Route::middleware(['admin', 'auth:api'])->group(function () {
     Route::post('/user-status', [UserController::class, 'update_user_status']);
     Route::get('/all-user', [UserController::class, 'all_user']);
     Route::post('/update-profile-status', [UserController::class, 'updateProfileStatus']);
+    Route::post('/client-type-update/{id}', [UserController::class, 'updatClientType']);
 
     //======================= Admin management =========================//
     Route::get('/admin-management', [UserController::class, 'admin_user']);
 
     //========================= User account create ====================//
-    Route::get('/create-all-user', [UserController::class, 'all_user']);
+    Route::get('/create-all-user', [UserController::class, 'allCreateUser']);
 
     //============================ My Team  ============================//
     Route::get('/my-team', [MyteamController::class, 'show_all_team']);
@@ -107,6 +112,13 @@ Route::middleware(['admin', 'auth:api'])->group(function () {
     Route::post('/vendor-store', [VendorController::class, 'store']);
     Route::get('/vendor-delete/{id}', [VendorController::class, 'destroy']);
 
+    //========================== QA ====================================//
+    Route::get('/qa-index', [VendorController::class, 'qaIndex']);
+    Route::get('/single-qa/{id}', [VendorController::class, 'singelQa']);
+    Route::post('/qa-store', [VendorController::class, 'qaStore']);
+    Route::get('/qa-delete/{id}', [VendorController::class, 'qaDestroy']);
+   
+
     //========================== Tier ==================================//    
     Route::post('/tiear-update', [TierController::class, 'updateTier']);
     Route::post('/update-tier/{id}', [TierController::class, 'updateTier']);
@@ -125,6 +137,8 @@ Route::middleware(['user', 'auth:api'])->group(function () {
     Route::get('/singel-teame/{id}', [MyteamController::class, 'single_team']);
     Route::delete('/delete-teame/{id}', [MyteamController::class, 'delete_team']);
     Route::post('/confirm-order', [VendorController::class, 'confirmOrder']);
+    Route::get('/qa-client', [VendorController::class, 'clentQa']);
+    Route::get('/check-document-status', [DocumentControler::class, 'checkStatus']);
 });
 
 //======================== Admin and User Both Access ====================//
@@ -155,3 +169,4 @@ Route::get('/faq', [FAqController::class, 'faq_index']);
 Route::get('/show-covered', [CoveredController::class, 'index']); 
 Route::get('/pricing', [PricingController::class, 'Index']);
 Route::get('/show-tiear', [TierController::class, 'show_tiear']);
+Route::get('/show-tiear-price', [TierController::class, 'showTiearPricing']);

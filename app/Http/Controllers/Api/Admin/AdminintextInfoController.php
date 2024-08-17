@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Parsonal;
 use App\Models\BuisnessInfo;
 use App\Models\Appoinment;
+use App\Models\Notification;
+use App\Notifications\IntakInfoNotification;
 
 class AdminintextInfoController extends Controller
 {
@@ -91,4 +93,52 @@ class AdminintextInfoController extends Controller
             return response()->json(['status'=>200, "message" => "Record not found"], 400);
         }
     }
+
+
+
+    public function getUserNotifications(Request $request)
+    {
+        // Fetch paginated notifications
+        $notifications = Notification::orderByRaw('read_at IS NULL DESC')
+                                    ->orderBy('created_at', 'desc')
+                                    ->paginate(10); 
+    
+        // Decode the 'data' field for each notification
+        $allNotifications = $notifications->map(function ($notification) {
+            $data = json_decode($notification->data, true); // Decode the JSON data
+    
+            return [
+                'id' => $notification->id,
+                'type' => $notification->type,
+                'data' => $data, // Include decoded data
+                'read_at' => $notification->read_at,
+                'created_at' => $notification->created_at,
+                'updated_at' => $notification->updated_at,
+            ];
+        });
+    
+        // Return notifications as JSON response with pagination metadata
+        return response()->json([
+            'data' => $allNotifications, // Actual notifications
+            'current_page' => $notifications->currentPage(),
+            'total_pages' => $notifications->lastPage(),
+            'total_items' => $notifications->total(),
+            'per_page' => $notifications->perPage(),
+        ]);
+    }
+    
+
+    public function updateNotification($id)
+    {
+         $date = date('Y-m-d');
+        $updateNotification = Notification::find($id);
+        $updateNotification->read_at = $date;
+        $updateNotification->save();
+        if(!$updateNotification){
+            return response()->json( 'Update Notification faile');
+        }
+        return response()->json( 'Update Notification successfull'); 
+    }
 }
+
+     

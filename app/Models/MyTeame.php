@@ -20,4 +20,9 @@ class MyTeame extends Model
         'addisional_certificate',
         
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

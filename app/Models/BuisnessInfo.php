@@ -11,6 +11,7 @@ class BuisnessInfo extends Model
     protected $fillable = [
         'parsonal_id',        
         'buisness_name',
+        'client_type',
         'buisness_address',        
         'how_long_time_buisness',
         'business_malpractice_insurance',

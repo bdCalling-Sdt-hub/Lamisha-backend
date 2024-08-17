@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('privacies', function (Blueprint $table) {
+        Schema::create('q_a_s', function (Blueprint $table) {
             $table->id();
+            $table->string('email');
+            $table->string('title');
+            $table->json('file');
             $table->text('description');
             $table->timestamps();
         });
@@ -23,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('privacies');
+        Schema::dropIfExists('q_a_s');
     }
 };

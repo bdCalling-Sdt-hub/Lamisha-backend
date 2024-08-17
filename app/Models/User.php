@@ -6,10 +6,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Passport\HasApiTokens;
+use Laravel\Sanctum\HasApiTokens;
+
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -29,7 +30,12 @@ class User extends Authenticatable
     
     public function user_update()
     {
-        return $this->hasMany(UpdateProfile::class);
+        return $this->hasOne(UpdateProfile::class);
+    }
+
+    public function parsonal()
+    {
+        return $this->hasMany(Parsonal::class);
     }
     /**
      * The attributes that should be hidden for serialization.

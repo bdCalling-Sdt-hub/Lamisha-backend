@@ -67,7 +67,7 @@
             <h1>OTP Confirmation</h1>
         </div>
         <li>Email: {{$email}}</li>
-        <li>Payment Date: {{ $payment_date }}</li>
+        
        
     </div>
 

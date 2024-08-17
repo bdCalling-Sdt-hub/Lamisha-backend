@@ -9,30 +9,67 @@ use App\Http\Requests\BuisnessRequest;
 use App\Http\Requests\ParsonalRequest;
 use App\Models\Parsonal;
 use App\Models\Appoinment;
-
+use App\Models\BuisnessInfo;
 use DB;
+use App\Mail\PersonalInfoMail;
+use Mail;
 
+use App\Models\User;
+use App\Notifications\IntakInfoNotification;
 class IntekInformationController extends Controller
 {
 
     public function parsonal_info(ParsonalRequest $request)
     {
-       // return $request->all();
-
         $validated = $request->validated();
         $existing_user = DB::table('parsonals')->where('email', $validated['email'])->first();
+    
         if ($existing_user) {
-            return response()->json(['status'=>409, 'message' => 'User already exists', 'data' => $existing_user], 409);
+            return response()->json(['status' => 409, 'message' => 'User already exists', 'data' => $existing_user], 409);
         } else {
             $inserted_id = DB::table('parsonals')->insertGetId($validated);
+    
             if ($inserted_id) {
                 $new_data = DB::table('parsonals')->where('id', $inserted_id)->first();
-                return response()->json(['status'=>200, 'message' => 'Data inserted successfully', 'data' => $new_data], 201);
+    
+                Mail::to('engrabdurrahman4991@gmail.com')->send(new PersonalInfoMail($request->first_name, $request->last_name, $request->email, $request->phone));
+                
+                // Send notification
+                $parsonal = Parsonal::find($inserted_id);
+                if ($parsonal) {
+                    $parsonal->notify(new IntakInfoNotification('Join your team', $new_data));
+                }
+    
+                return response()->json(['status' => 200, 'message' => 'Data inserted successfully', 'data' => $new_data], 201);
             } else {
-                return response()->json(['status'=>500,'message' => 'Data insertion failed'], 500);
+                return response()->json(['status' => 500, 'message' => 'Data insertion failed'], 500);
             }
         }
     }
+    
+
+    // public function parsonal_info(ParsonalRequest $request)
+    // {
+    //    // return $request->all();
+
+    //     $validated = $request->validated();
+    //     $existing_user = DB::table('parsonals')->where('email', $validated['email'])->first();
+    //     if ($existing_user) {
+    //         return response()->json(['status'=>409, 'message' => 'User already exists', 'data' => $existing_user], 409);
+    //     } else {
+    //         $inserted_id = DB::table('parsonals')->insertGetId($validated);
+    //         if ($inserted_id) {
+    //             $new_data = DB::table('parsonals')->where('id', $inserted_id)->first();
+    //             SentIntakeInfo::dispath($validated);
+    //             return response()->json(['status'=>200, 'message' => 'Data inserted successfully', 'data' => $new_data], 201);
+    //         } else {
+    //             return response()->json(['status'=>500,'message' => 'Data insertion failed'], 500);
+    //         }
+    //     }
+        
+    // }
+
+    // Client update buisness info
 
     public function buisness_info(BuisnessRequest $request)
     { 
@@ -51,6 +88,7 @@ class IntekInformationController extends Controller
             }
         }
     }
+
 
     public function appointment_info(AppointmentRequest $request)
     {

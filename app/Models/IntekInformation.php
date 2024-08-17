@@ -30,9 +30,11 @@ class IntekInformation extends Model
         'direct_service_business',
         'what_state_anicipate_service',
         'tier_service_interrested',
+        'client_type',
         'how_many_client_patients_service_month',
-        'additional_question',
+        'additional_question',        
         'date',
         'time'
+
     ];
 }

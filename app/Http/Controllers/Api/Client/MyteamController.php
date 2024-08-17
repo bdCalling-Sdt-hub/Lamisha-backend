@@ -116,7 +116,7 @@ class MyteamController extends Controller
 
     public function show_all_team(Request $request)
     {
-        $query = MyTeame::orderBy('id', 'desc');
+        $query = MyTeame::with('user')->orderBy('id', 'desc');
         if ($request->filled('status')) {
             $query->where('status', 'like', "%{$request->status}%");
         }

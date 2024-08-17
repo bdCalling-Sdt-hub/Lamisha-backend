@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('parsonal_id');
             $table->string('status')->default('pending');;
             $table->string('buisness_name');
+            $table->string('client_type');
             $table->string('buisness_address');           
             $table->string('how_long_time_buisness');
             $table->string('business_malpractice_insurance');            
