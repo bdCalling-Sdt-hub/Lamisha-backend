@@ -19,7 +19,7 @@ class AdminMiddleware
         try {
             $user = Auth::user();
 
-            if ($user->user_type == 'ADMIN') {
+            if ($user->user_type == 'ADMIN' || 'SUPER ADMIN') {
                 return $next($request);
             }
 

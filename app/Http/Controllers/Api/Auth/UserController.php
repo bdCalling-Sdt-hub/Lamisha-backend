@@ -458,6 +458,7 @@ public function user()
     {
 
         $user = User::find($id);
+        
         if ($user) {
             $user->delete();
             return response()->json(['status' => '200', 'message' => 'Delete user success']);
