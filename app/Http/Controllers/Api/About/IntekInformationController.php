@@ -37,7 +37,7 @@ class IntekInformationController extends Controller
                 // Send notification
                 $parsonal = Parsonal::find($inserted_id);
                 if ($parsonal) {
-                    $parsonal->notify(new IntakInfoNotification('Join your team', $new_data));
+                    $parsonal->notify(new IntakInfoNotification('Intake Information', $new_data));
                 }
     
                 return response()->json(['status' => 200, 'message' => 'Data inserted successfully', 'data' => $new_data], 201);
