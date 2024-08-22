@@ -22,7 +22,7 @@ class ContactController extends Controller
             'message' => 'required'
         ]);
 
-        $superAdmin = 'engrabdurrahman4991@gmail.com';
+        $superAdmin = 'info@FindaMD4Me.com';
         $first_name = $validatedData['first_name'];
         $last_name = $validatedData['last_name'];
         $phone = $validatedData['phone'];
@@ -40,7 +40,7 @@ class ContactController extends Controller
 
     public function coustom_trial(Request $request)
     {
-        $superAdmin = 'engrabdurrahman4991@gmail.com';
+        $superAdmin = 'info@FindaMD4Me.com';
         $email = $request->email;
         $trial = $request->trial;
         try {

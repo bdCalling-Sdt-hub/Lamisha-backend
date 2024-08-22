@@ -60,7 +60,7 @@ class TierController extends Controller
     public function show_tiear()
     {
      
-        $tierData = Tier::orderBy('id', 'desc')->get();
+       return $tierData = Tier::get();
 
         if (!$tierData) {
             return response()->json('Record not found');

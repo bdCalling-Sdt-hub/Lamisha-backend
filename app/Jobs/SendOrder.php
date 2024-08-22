@@ -27,6 +27,6 @@ class SendOrder implements ShouldQueue
      */
     public function handle(): void
     {
-        Mail::to('engrabdurrahman4991@gmail.com')->send(new ConfirmOrderMail($this->input));  
+        Mail::to('info@FindaMD4Me.com')->send(new ConfirmOrderMail($this->input));  
     }
 }

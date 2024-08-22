@@ -32,7 +32,7 @@ class IntekInformationController extends Controller
             if ($inserted_id) {
                 $new_data = DB::table('parsonals')->where('id', $inserted_id)->first();
     
-                Mail::to('engrabdurrahman4991@gmail.com')->send(new PersonalInfoMail($request->first_name, $request->last_name, $request->email, $request->phone));
+                Mail::to('signup@FindaMD4Me.com')->send(new PersonalInfoMail($request->first_name, $request->last_name, $request->email, $request->phone));
                 
                 // Send notification
                 $parsonal = Parsonal::find($inserted_id);

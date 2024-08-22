@@ -39,7 +39,7 @@
 <body>
 <div class="container">
     <div class="header">
-        <h1>Contact Form Submission</h1>
+        <h1>Contact you information</h1>
     </div>
     <div class="content">
     <h1>First Name: {{$first_name}}</h1>

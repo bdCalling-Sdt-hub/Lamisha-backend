@@ -19,10 +19,12 @@ use validate;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Parsonal;
 use App\Models\BuisnessInfo;
+use App\Models\Appoinment;
 use App\Models\Tier;
 use App\Models\Notification;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
+
 class UserController extends Controller
 {
 
@@ -454,19 +456,55 @@ public function user()
         return response()->json(['status' => '401', 'message' => 'No user authenticated'], 401);
     }
 }
+    // public function delete_user($id)
+    // {
+
+    //     $user = User::find($id);
+    //     $parsonalEmail = $user->email;
+    //     $personal = Parsonal::where('email', $parsonalEmail)->with('removeBuisness','removeAppoinment')->get();        
+    //     if ($personal) {            
+    //         $personal->delete();
+    //         $user->delete();
+    //         return response()->json(['status' => '200', 'message' => 'Delete user success']);
+    //     }
+
+    //     $user->delete();
+    //     return response()->json(['status' => '200', 'message' => 'Delete user success']);
+    // }
+
     public function delete_user($id)
     {
-
+        // Find the user by ID
         $user = User::find($id);
-        
-        if ($user) {
-            $user->delete();
-            return response()->json(['status' => '200', 'message' => 'Delete user success']);
-        } else {
-            return response()->json(['status' => '401', 'message' => 'Record not found']);
+        if (!$user) {
+            return response()->json(['status' => '404', 'message' => 'User not found']);
         }
 
+        // Find the associated personal record by email
+        $parsonalEmail = $user->email;
+        $personal = Parsonal::where('email', $parsonalEmail)->first();
+
+        if ($personal) {
+            try {
+                // Remove related business and appointments if necessary
+                $personal->removeBuisness()->delete();
+                $personal->removeAppoinment()->delete();
+                $personal->delete();
+            } catch (\Exception $e) {
+                return response()->json(['status' => '500', 'message' => 'Error deleting personal records', 'error' => $e->getMessage()]);
+            }
+        }
+
+        // Delete the user
+        try {
+            $user->delete();
+        } catch (\Exception $e) {
+            return response()->json(['status' => '500', 'message' => 'Error deleting user', 'error' => $e->getMessage()]);
+        }
+
+        return response()->json(['status' => '200', 'message' => 'Delete user success']);
     }
+    
 
     public function allCreateUser(Request $request)
     {

@@ -28,7 +28,7 @@ class DocumentControler extends Controller
     public function billing(Request $request)
     {
         // Administrator email
-        $admin_mail = 'engrabdurrahman4991@gmail.com';
+        $admin_mail = 'info@FindaMD4Me.com';
     
         // Authenticated user email
         $auth_user = Auth::user();

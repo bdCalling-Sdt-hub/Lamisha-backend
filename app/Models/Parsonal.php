@@ -33,4 +33,14 @@ class Parsonal extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+
+    //  Remove relations //
+    public function removeBuisness(){
+        return $this->hasOne(BuisnessInfo::class);
+    }
+    public function removeAppoinment(){
+        return $this->hasOne(Appoinment::class);
+    }
+    
 }
