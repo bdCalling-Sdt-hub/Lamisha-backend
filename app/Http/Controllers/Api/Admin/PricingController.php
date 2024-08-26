@@ -11,7 +11,7 @@ class PricingController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Tier::with('price')->orderBy('id', 'desc');
+        $query = Tier::with('price');
         
         if ($request->filled('pricing_type')) {
             $query->whereHas('price', function($q) use ($request) {

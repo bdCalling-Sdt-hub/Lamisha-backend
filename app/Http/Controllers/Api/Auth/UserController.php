@@ -176,7 +176,7 @@ class UserController extends Controller
     // }
 
     public function loginUser(Request $request)
-{
+{    
     $credentials = $request->only('email', 'password');
 
     if (Auth::attempt($credentials)) {

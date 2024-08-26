@@ -176,6 +176,18 @@ public function update_document(Request $request)
         }
     }
 
+    public function show_auth_user_documet(Request $request)
+    {
+        $auth = auth()->user();
+        $query = ClientDocument::where('user_id', $auth->id)->first();
+      
+        if($query){
+           return response()->json(['status'=>200, 'data' => $query], 200);
+        }else{
+           return response()->json(['status'=>200, 'message' => 'Record not found'], 200);
+        }
+    }
+
    
     
     
@@ -219,6 +231,7 @@ public function update_document(Request $request)
         // Update the document details
         $document->date = $request->date;
         $document->time = $request->time;
+        $document->status = "pending";
     
         // Save the document
         if (!$document->save()) {

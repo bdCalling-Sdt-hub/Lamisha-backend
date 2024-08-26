@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('buisness_infos', function (Blueprint $table) {
             $table->id();
-            $table->string('parsonal_id');
+            $table->integer('parsonal_id');
             $table->string('status')->default('pending');;
             $table->string('buisness_name');
             $table->string('client_type');

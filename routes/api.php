@@ -139,6 +139,7 @@ Route::middleware(['user', 'auth:api'])->group(function () {
     Route::post('/confirm-order', [VendorController::class, 'confirmOrder']);
     Route::get('/qa-client', [VendorController::class, 'clentQa']);
     Route::get('/check-document-status', [DocumentControler::class, 'checkStatus']);
+    Route::get('/auth-user-document', [DocumentControler::class, 'show_auth_user_documet']);
 });
 
 //======================== Admin and User Both Access ====================//
@@ -146,7 +147,7 @@ Route::middleware(['user_admin', 'auth:api'])->group(function () {
     Route::get('/vendor', [VendorController::class, 'AdminVendor_index']);
     Route::get('/ehr', [EHRController::class, 'EHR_index']);
     Route::get('/faith', [FaithExamController::class, 'FithExam_index']);
-    Route::get('/show-tiear', [TierController::class, 'show_tiear']);
+    Route::get('/show-tiear', [TierController::class, 'show_tiear']); 
     Route::get('/client-tiear', [TierController::class, 'client_tier']);
 });
 

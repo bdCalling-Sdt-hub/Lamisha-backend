@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('tiers', function (Blueprint $table) {
             $table->id();
             $table->string('tyer_name');
-            $table->string('protocol_image')->nullable();
-            $table->string('standing_image')->nullable(); 
-            $table->string('policy_image')->nullable();
-            $table->string('constant_image')->nullable();
+            $table->json('protocol_image')->nullable();
+            $table->json('standing_image')->nullable(); 
+            $table->json('policy_image')->nullable();
+            $table->json('constant_image')->nullable();
             $table->timestamps();
         });
     }
