@@ -619,7 +619,7 @@ public function all_user(Request $request)
 
     public function admin_user()
     {
-        $user = User::where('user_type', 'ADMIN')->orWhere('user_type','SUPER ADMIN')->get();
+        $user = User::where('user_type', 'ADMIN')->get();
         if ($user) {
 
             return response()->json(['status' => '200', 'data' => $user]);

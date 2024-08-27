@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\About\EHRController;
 use App\Http\Controllers\Api\About\VendorController;
 use App\Http\Controllers\Api\About\TierController;
 use App\Http\Controllers\Api\Admin\PricingController;
+
 //========================For Every User Api =========================//
 Route::middleware('auth:api')->group(function () {
     Route::get('/user', [UserController::class, 'user']);
