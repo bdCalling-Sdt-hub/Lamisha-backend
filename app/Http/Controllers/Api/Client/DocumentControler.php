@@ -100,12 +100,27 @@ class DocumentControler extends Controller
     }
 
     // Process the uploaded files
+    // foreach ($files as $file) {
+    //     if ($request->hasFile($file)) {
+    //         $path = $request->file($file)->store('Client_documents', 'public');
+    //         $document->$file = $path;
+    //     }
+    // }
+
     foreach ($files as $file) {
         if ($request->hasFile($file)) {
-            $path = $request->file($file)->store('Client_documents', 'public');
+            $uploadedFile = $request->file($file);
+            $originalName = $uploadedFile->getClientOriginalName(); // Get the original file name
+            $path = 'Client_documents/' . $originalName;
+    
+            // Store the file using the original name
+            $uploadedFile->storeAs('Client_documents', $originalName, 'public');
+    
+            // Save the path
             $document->$file = $path;
         }
     }
+    
 
     // Save the document record
     $document->save();
@@ -137,14 +152,29 @@ public function update_document(Request $request)
     $document->user_id = $user_id;
 
     // Process file uploads
+    // foreach ($files as $file) {
+    //     if ($request->hasFile($file)) {
+    //         $path = $request->file($file)->store('Client_documents', 'public');
+    //         $document->$file = $path;
+    //     } else {
+    //         return response()->json(['status' => 400, 'message' => "$file upload failed"], 400);
+    //     }
+    // }
     foreach ($files as $file) {
         if ($request->hasFile($file)) {
-            $path = $request->file($file)->store('Client_documents', 'public');
+            $uploadedFile = $request->file($file);
+            $originalName = $uploadedFile->getClientOriginalName(); // Get the original file name
+    
+            // Define the storage path with the original file name
+            $path = $uploadedFile->storeAs('Client_documents', $originalName, 'public');
+    
+            // Save the path to the database
             $document->$file = $path;
         } else {
             return response()->json(['status' => 400, 'message' => "$file upload failed"], 400);
         }
     }
+    
 
     // Save the updated document
     $document->save();

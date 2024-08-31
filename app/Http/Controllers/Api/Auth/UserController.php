@@ -198,7 +198,7 @@ class UserController extends Controller
 
 public function user()
 {
-    $totalNotification = Notification::count();
+    $totalNotification = Notification::where('read_at', null)->count();
     $user = Auth::user();        
 
     if ($user) {
