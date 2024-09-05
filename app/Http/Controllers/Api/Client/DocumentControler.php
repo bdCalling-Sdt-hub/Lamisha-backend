@@ -67,6 +67,7 @@ class DocumentControler extends Controller
     public function store_document(Request $request)
 {
    
+   
     $auth_user = Auth::user();
      $user_id = $auth_user->id;
 

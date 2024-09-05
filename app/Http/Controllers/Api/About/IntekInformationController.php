@@ -25,7 +25,7 @@ class IntekInformationController extends Controller
         $existing_user = DB::table('parsonals')->where('email', $validated['email'])->first();
     
         if ($existing_user) {
-            return response()->json(['status' => 409, 'message' => 'User already exists', 'data' => $existing_user], 409);
+            return response()->json(['status' => 409, 'message' => 'We already have a intake on file with this email please contact us at'. $request->eamil, 'data' => $existing_user], 409);
         } else {
             $inserted_id = DB::table('parsonals')->insertGetId($validated);
     
