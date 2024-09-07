@@ -28,15 +28,15 @@ Route::middleware('auth:api')->group(function () {
 
 });
 
-Route::post('/register', [UserController::class, 'register']); 
+Route::post('/register', [UserController::class, 'register']);
 
 // ================================== Admin ========================== //
 Route::middleware(['admin', 'auth:api'])->group(function () {
-      
+
     Route::post('/profile-update', [UserController::class, 'edit_profile_update']);
     Route::post('/admin-update/{id}', [UserController::class, 'adminUpdate']);
     Route::delete('/user-delete/{id}', [UserController::class, 'delete_user']);
-    Route::resource('covered', CoveredController::class);    
+    Route::resource('covered', CoveredController::class);
 
     //=========================== About ===============================//
     Route::post('/about-store-or-update', [AboutController::class, 'storeOrUpdate']);
@@ -72,7 +72,7 @@ Route::middleware(['admin', 'auth:api'])->group(function () {
     Route::get('/user-document', [DocumentControler::class, 'show_user_documet']);
     Route::get('/singel_user_documet/{id}', [DocumentControler::class, 'singel_user_documet']);
     Route::post('/client-document-status', [DocumentControler::class, 'client_document_status']);
-   
+
 
     //========================= User management ========================//
     Route::get('/user-management', [UserController::class, 'update_profile_all_user']);
@@ -93,7 +93,7 @@ Route::middleware(['admin', 'auth:api'])->group(function () {
     Route::get('/singel-team/{id}', [MyteamController::class, 'singel_team_member']);
     Route::post('/teame-status', [MyteamController::class, 'update_team_status']);
 
-    //======================== Add Tear or Pricing ====================//    
+    //======================== Add Tear or Pricing ====================//
     Route::post('/add-tiear', [PricingController::class, 'store']);
     Route::post('/update-tiear/{id}', [PricingController::class, 'update']);
 
@@ -118,9 +118,9 @@ Route::middleware(['admin', 'auth:api'])->group(function () {
     Route::get('/single-qa/{id}', [VendorController::class, 'singelQa']);
     Route::post('/qa-store', [VendorController::class, 'qaStore']);
     Route::get('/qa-delete/{id}', [VendorController::class, 'qaDestroy']);
-   
 
-    //========================== Tier ==================================//    
+
+    //========================== Tier ==================================//
     Route::post('/tiear-update', [TierController::class, 'updateTier']);
     Route::post('/update-tier/{id}', [TierController::class, 'updateTier']);
 
@@ -144,11 +144,11 @@ Route::middleware(['user', 'auth:api'])->group(function () {
 });
 
 //======================== Admin and User Both Access ====================//
-Route::middleware(['user_admin', 'auth:api'])->group(function () {    
+Route::middleware(['user_admin', 'auth:api'])->group(function () {
     Route::get('/vendor', [VendorController::class, 'AdminVendor_index']);
     Route::get('/ehr', [EHRController::class, 'EHR_index']);
     Route::get('/faith', [FaithExamController::class, 'FithExam_index']);
-    Route::get('/show-tiear', [TierController::class, 'show_tiear']); 
+    Route::get('/show-tiear', [TierController::class, 'show_tiear']);
     Route::get('/client-tiear', [TierController::class, 'client_tier']);
 });
 
@@ -168,7 +168,7 @@ Route::get('/about', [AboutController::class, 'about_index']);
 Route::get('/privacy', [PrivacyPolicyController::class, 'privacy_index']);
 Route::get('/terems', [TermsConditionsController::class, 'terms_index']);
 Route::get('/faq', [FAqController::class, 'faq_index']);
-Route::get('/show-covered', [CoveredController::class, 'index']); 
+Route::get('/show-covered', [CoveredController::class, 'index']);
 Route::get('/pricing', [PricingController::class, 'Index']);
 Route::get('/show-tiear', [TierController::class, 'show_tiear']);
 Route::get('/show-tiear-price', [TierController::class, 'showTiearPricing']);

@@ -22,16 +22,18 @@ class ParsonalRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'first_name'=>'required',
-            'last_name'=>'required',
-            'dob'=>'required',
-            'email'=>'required',
-            'phone'=>'required',
-            'occupation'=>'required',
-            'state_license_certificate'=>'required',
-            'license_certificate_no'=>'required',
-            'completed_training_certificate_service'=>'required',
-            'mailing_address'=>'required'
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'dob' => 'required',
+            'email' => 'required|email|unique:users,email,' . $this->id,
+            'phone' => 'required|',
+            'occupation' => 'required',
+            'state_license_certificate' => 'required',
+            'license_certificate_no' => 'required',
+            'completed_training_certificate_service' => 'required',
+            'mailing_address' => 'required',
         ];
     }
+
+
 }

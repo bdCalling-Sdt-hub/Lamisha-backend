@@ -9,10 +9,10 @@ class BuisnessInfo extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'parsonal_id',        
+        'parsonal_id',
         'buisness_name',
         'client_type',
-        'buisness_address',        
+        'buisness_address',
         'how_long_time_buisness',
         'business_malpractice_insurance',
         'business_registe_red_secretary_state',
@@ -24,4 +24,6 @@ class BuisnessInfo extends Model
         'how_many_client_patients_service_month',
         'additional_question',
     ];
+
+
 }

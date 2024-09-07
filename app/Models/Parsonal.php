@@ -19,7 +19,7 @@ class Parsonal extends Model
         'license_certificate_no',
         'completed_training_certificate_service',
         'mailing_address',
-        
+
     ];
     public function buisness()
     {
@@ -42,5 +42,11 @@ class Parsonal extends Model
     public function removeAppoinment(){
         return $this->hasOne(Appoinment::class);
     }
-    
+    public function getAttributeStateLicenseCertificate($value) {
+        return json_decode($value);
+    }
+
+    public function setAttributeStateLicenseCertificate($value) {
+        return json_encode($value);
+    }
 }
