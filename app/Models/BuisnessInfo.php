@@ -25,11 +25,10 @@ class BuisnessInfo extends Model
         'additional_question',
     ];
 
-    // public function getAttributeStateLicenseCertificate($value) {
-    //     return json_decode($value);
-    // }
-
-    // public function setAttributeStateLicenseCertificate($value) {
-    //     return json_encode($value);
-    // }
+    public function getWhatStateYourBusinessRegisteredAttribute($value) {
+        return json_decode($value,true);
+    }
+    public function getWhatStateAnicipateServiceAttribute($value) {
+        return json_decode($value,true);
+    }
 }
