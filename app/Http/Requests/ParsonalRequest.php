@@ -25,7 +25,7 @@ class ParsonalRequest extends FormRequest
             'first_name' => 'required',
             'last_name' => 'required',
             'dob' => 'required',
-            'email' => 'required|email|unique:users,email,' . $this->id,
+            'email' => 'required',
             'phone' => 'required|',
             'occupation' => 'required',
             'state_license_certificate' => 'required',

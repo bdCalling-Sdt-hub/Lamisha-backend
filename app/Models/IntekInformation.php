@@ -32,9 +32,16 @@ class IntekInformation extends Model
         'tier_service_interrested',
         'client_type',
         'how_many_client_patients_service_month',
-        'additional_question',        
+        'additional_question',
         'date',
         'time'
 
     ];
+    // public function getAttributeStateLicenseCertificate($value) {
+    //     return json_decode($value);
+    // }
+
+    // public function setAttributeStateLicenseCertificate($value) {
+    //     return json_encode($value);
+    // }
 }
