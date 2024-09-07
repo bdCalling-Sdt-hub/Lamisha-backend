@@ -13,21 +13,17 @@ use App\Models\BuisnessInfo;
 use DB;
 use App\Mail\PersonalInfoMail;
 use Mail;
-
 use App\Models\User;
 use App\Notifications\IntakInfoNotification;
 class IntekInformationController extends Controller
 {
-
     public function parsonal_info(ParsonalRequest $request)
     {
         $validated = $request->validated();
          $existing_user = DB::table('parsonals')->where('email', $validated['email'])->first();
-
          if (isset($validated['state_license_certificate']) && is_array($validated['state_license_certificate'])) {
             $validated['state_license_certificate'] = json_encode($validated['state_license_certificate']);
         }
-
         if ($existing_user) {
             return response()->json(['status' => 409, 'message' => 'We already have a intake on file with this email please contact us at'. $request->eamil, 'data' => $existing_user], 409);
         } else {
@@ -53,7 +49,6 @@ class IntekInformationController extends Controller
 
     public function buisness_info(BuisnessRequest $request)
     {
-
        $what_state_anicipate_service= array($request->what_state_anicipate_service);
         $validated = $request->validated();
         if (isset($validated['what_state_your_business_registered']) && is_array($validated['what_state_your_business_registered'])) {
@@ -80,16 +75,12 @@ class IntekInformationController extends Controller
     public function appointment_info(AppointmentRequest $request)
     {
         $validated = $request->validated();
-
-        // Check if the personal information exists
          $existing_user = Parsonal::find($request->parsonal_id);
 
         if (!$existing_user) {
             return response()->json(['status' => 409, 'message' => 'Please fill up personal information', 'data' => $existing_user], 409);
         } else {
-            // Create a new appointment
             $appointment = Appoinment::create($validated);
-
             if ($appointment) {
                 return response()->json(['status' => 200, 'message' => 'Data inserted successfully', 'data' => $appointment], 201);
             } else {
