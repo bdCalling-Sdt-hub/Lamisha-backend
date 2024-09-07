@@ -176,7 +176,7 @@ class UserController extends Controller
     // }
 
     public function loginUser(Request $request)
-{    
+    {
     $credentials = $request->only('email', 'password');
 
     if (Auth::attempt($credentials)) {
@@ -199,12 +199,12 @@ class UserController extends Controller
 public function user()
 {
     $totalNotification = Notification::where('read_at', null)->count();
-    $user = Auth::user();        
+    $user = Auth::user();
 
     if ($user) {
         $userEmail = $user->email;
         $IntackInfo = Parsonal::where('email', $userEmail)->first();
-        
+
         $parsonalId = $IntackInfo ? $IntackInfo->id : null;
         $buisnessData = $parsonalId ? BuisnessInfo::where('parsonal_id', $parsonalId)->first() : null;
         $tierId = $buisnessData ? $buisnessData->tier_service_interrested : null;
@@ -291,7 +291,7 @@ public function user()
         if ($user) {
             // Check if there is an existing update request for this user
             $existingRequest = UpdateProfile::where('user_id', $user->id)->first();
-    
+
             if ($existingRequest) {
                 // Delete the existing image file if it exists
                 if ($existingRequest->image) {
@@ -303,7 +303,7 @@ public function user()
                 // Delete the existing update request record
                 $existingRequest->delete();
             }
-    
+
             $newProfileUpdate = new UpdateProfile();
             $newProfileUpdate->user_id = $user->id;
             $newProfileUpdate->first_name = $request->first_name ?: $user->first_name;
@@ -312,23 +312,23 @@ public function user()
             $newProfileUpdate->phone = $request->phone ?: $user->phone;
             $newProfileUpdate->buisness_address = $request->buisness_address ?: $user->buisness_address;
             $newProfileUpdate->buisness_name = $request->buisnes_name ?: $user->buisness_name;
-    
+
             // Handle image file
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
                 $timeStamp = time(); // Current timestamp
                 $fileName = $timeStamp . '.' . $file->getClientOriginalExtension();
                 $file->storeAs('public/image', $fileName);
-    
+
                 $fileUrl = '/storage/image/' . $fileName;
                 $newProfileUpdate->image = $fileUrl;
             } else {
                 // If no image was uploaded, set image to null or empty string
                 $newProfileUpdate->image = $existingRequest ? $existingRequest->image : null;
             }
-    
+
             $newProfileUpdate->save();
-    
+
             return response()->json([
                 'status' => 200,
                 'message' => "Profile updated successfully, waiting for admin approval.",
@@ -340,7 +340,7 @@ public function user()
             ], 401);
         }
     }
-    
+
 
 
 
@@ -432,7 +432,7 @@ public function user()
 
         // Save the updated user profile
         $user->save();
-       
+
         $updateProfile->status = 'Active';
         $updateProfile->save();
 
@@ -461,8 +461,8 @@ public function user()
 
     //     $user = User::find($id);
     //     $parsonalEmail = $user->email;
-    //     $personal = Parsonal::where('email', $parsonalEmail)->with('removeBuisness','removeAppoinment')->get();        
-    //     if ($personal) {            
+    //     $personal = Parsonal::where('email', $parsonalEmail)->with('removeBuisness','removeAppoinment')->get();
+    //     if ($personal) {
     //         $personal->delete();
     //         $user->delete();
     //         return response()->json(['status' => '200', 'message' => 'Delete user success']);
@@ -504,7 +504,7 @@ public function user()
 
         return response()->json(['status' => '200', 'message' => 'Delete user success']);
     }
-    
+
 
     public function allCreateUser(Request $request)
     {
@@ -543,21 +543,21 @@ public function all_user(Request $request)
     foreach ($users as $user) {
         // Get the personal info based on the user's email
         $personalInfo = Parsonal::where('email', $user->email)->first();
-        
+
         if ($personalInfo) {
             // Get the personal ID
             $personalId = $personalInfo->id;
-            
+
             // Get the business data based on the personal ID
             $businessData = BuisnessInfo::where('parsonal_id', $personalId)->first();
-            
+
             // Get the tier data based on the tier ID from business data
             $tierData = null;
             if ($businessData) {
                 $tierId = $businessData->tier_service_interrested;
                 $tierData = Tier::find($tierId);
             }
-            
+
             // Add data to results array
             $results[] = [
                 'user' => $user,
@@ -570,7 +570,7 @@ public function all_user(Request $request)
 
     // Convert results to a collection
     $resultsCollection = collect($results);
-    
+
     // Apply search filter if provided
     if ($request->filled('search')) {
         $search = $request->search;
@@ -580,7 +580,7 @@ public function all_user(Request $request)
                    str_contains(strtolower($item['user']->email), strtolower($search));
         });
     }
-    
+
     // Paginate the results
     $currentPage = $request->input('page', 1); // Get the current page number
     $perPage = 8; // Number of results per page
@@ -594,7 +594,7 @@ public function all_user(Request $request)
         $currentPage, // Current page
         ['path' => Paginator::resolveCurrentPath()] // Base path for pagination links
     );
-    
+
     // Return the response
     return response()->json($paginatedResults);
 }
@@ -630,7 +630,7 @@ public function all_user(Request $request)
     }
 
 
-  
+
 
     public function adminUpdate(Request $request, $id) {
         // Validate incoming request
@@ -645,14 +645,14 @@ public function all_user(Request $request)
         //     'buisness_address' => 'nullable|string|max:255',
         //     'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         // ]);
-    
+
         // Find the user by ID
         $updateAdmin = User::find($id);
-    
+
         if (!$updateAdmin) {
             return response()->json(['status' => 404, 'message' => 'User not found'], 404);
         }
-    
+
         // Update user details with new values or keep the existing ones
         $updateAdmin->first_name = $request->input('first_name', $updateAdmin->first_name);
         $updateAdmin->last_name = $request->input('last_name', $updateAdmin->last_name);
@@ -661,28 +661,28 @@ public function all_user(Request $request)
         $updateAdmin->user_type = $request->input('user_type', $updateAdmin->user_type);
         $updateAdmin->buisness_name = $request->input('buisness_name', $updateAdmin->buisness_name);
         $updateAdmin->buisness_address = $request->input('buisness_address', $updateAdmin->buisness_address);
-    
+
         // Handle image upload
         if ($request->hasFile('image')) {
             // Delete the old image if it exists
             if ($updateAdmin->image && Storage::exists(str_replace('/storage/', 'public/', $updateAdmin->image))) {
                 Storage::delete(str_replace('/storage/', 'public/', $updateAdmin->image));
             }
-    
+
             // Store the new image
             $file = $request->file('image');
             $fileName = time() . '.' . $file->getClientOriginalExtension();
             $filePath = $file->storeAs('public/image', $fileName);
-    
+
             // Update the image URL
             $updateAdmin->image = Storage::url('image/' . $fileName);
         }
-    
+
         // Save the updated user details
         $updateAdmin->save();
-    
+
         // Return a successful response
         return response()->json(['status' => 200, 'data' => $updateAdmin]);
     }
-    
+
 }

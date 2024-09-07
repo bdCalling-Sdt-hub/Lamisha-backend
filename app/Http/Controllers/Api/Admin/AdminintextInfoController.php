@@ -15,7 +15,7 @@ class AdminintextInfoController extends Controller
     public function intekInof(Request $request)
     {
         $query = Parsonal::orderBy('id', 'desc');
-        
+
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -24,16 +24,16 @@ class AdminintextInfoController extends Controller
                   ->orWhere('email', 'like', "%{$search}%");
             });
         }
-    
+
         $parsonal_data = $query->paginate(8);
-    
+
         if ($parsonal_data->count() > 0) {
             return response()->json($parsonal_data);
         } else {
             return response()->json(["message" => "Record not found"], 400);
         }
     }
-    
+
 
     public function singleIntek_info($id)
     {
@@ -101,12 +101,12 @@ class AdminintextInfoController extends Controller
         // Fetch paginated notifications
         $notifications = Notification::orderByRaw('read_at IS NULL DESC')
                                     ->orderBy('created_at', 'desc')
-                                    ->paginate(10); 
-    
+                                    ->paginate(10);
+
         // Decode the 'data' field for each notification
         $allNotifications = $notifications->map(function ($notification) {
             $data = json_decode($notification->data, true); // Decode the JSON data
-    
+
             return [
                 'id' => $notification->id,
                 'type' => $notification->type,
@@ -116,7 +116,7 @@ class AdminintextInfoController extends Controller
                 'updated_at' => $notification->updated_at,
             ];
         });
-    
+
         // Return notifications as JSON response with pagination metadata
         return response()->json([
             'data' => $allNotifications, // Actual notifications
@@ -126,7 +126,7 @@ class AdminintextInfoController extends Controller
             'per_page' => $notifications->perPage(),
         ]);
     }
-    
+
 
     public function updateNotification($id)
     {
@@ -137,8 +137,8 @@ class AdminintextInfoController extends Controller
         if(!$updateNotification){
             return response()->json( 'Update Notification faile');
         }
-        return response()->json( 'Update Notification successfull'); 
+        return response()->json( 'Update Notification successfull');
     }
 }
 
-     
+
