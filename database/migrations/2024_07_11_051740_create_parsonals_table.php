@@ -21,9 +21,9 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('occupation');
             $table->string('mailing_address')->nullable();
-            $table->string('state_license_certificate')->nullable();
+            $table->json('state_license_certificate')->nullable();
             $table->string('license_certificate_no')->nullable();
-            $table->string('completed_training_certificate_service'); 
+            $table->string('completed_training_certificate_service');
             $table->timestamps();
         });
     }

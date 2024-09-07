@@ -22,13 +22,17 @@ class IntekInformationController extends Controller
     public function parsonal_info(ParsonalRequest $request)
     {
         $validated = $request->validated();
-        $existing_user = DB::table('parsonals')->where('email', $validated['email'])->first();
+         $existing_user = DB::table('parsonals')->where('email', $validated['email'])->first();
+
+         if (isset($validated['state_license_certificate']) && is_array($validated['state_license_certificate'])) {
+            $validated['state_license_certificate'] = json_encode($validated['state_license_certificate']);
+        }
 
         if ($existing_user) {
             return response()->json(['status' => 409, 'message' => 'We already have a intake on file with this email please contact us at'. $request->eamil, 'data' => $existing_user], 409);
         } else {
             $inserted_id = DB::table('parsonals')->insertGetId($validated);
-
+            // $inserted_id = Parsonal::create($validated);
             if ($inserted_id) {
                 $new_data = DB::table('parsonals')->where('id', $inserted_id)->first();
 
@@ -75,6 +79,9 @@ class IntekInformationController extends Controller
     {
        $what_state_anicipate_service= array($request->what_state_anicipate_service);
         $validated = $request->validated();
+        if (isset($validated['state_license_certificate'])) {
+            $validated['state_license_certificate'] = json_encode($validated['state_license_certificate']);
+        }
          $existing_user = DB::table('parsonals')->where('id', $request->parsonal_id)->first();
         if (! $existing_user) {
             return response()->json(['status'=>409,'message' => 'Plese filup parsonal inforamtion', 'data' => $existing_user], 409);
