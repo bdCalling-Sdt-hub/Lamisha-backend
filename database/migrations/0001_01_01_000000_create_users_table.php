@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('user_type');
             $table->string('phone')->nullable();
             $table->string('status')->default('active');
+            $table->string('another_status')->default('disable');
             $table->string('verify_email')->nullable();
             $table->string('buisness_name')->nullable();
             $table->string('buisness_address')->nullable();

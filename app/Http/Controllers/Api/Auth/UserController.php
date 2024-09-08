@@ -685,4 +685,25 @@ public function all_user(Request $request)
         return response()->json(['status' => 200, 'data' => $updateAdmin]);
     }
 
+
+
+
+    public function updateUser($id)
+    {
+        $user = User::find($id);
+        if (empty($user)) {
+            return response()->json(['message'=> 'User does not exist'],404);
+        }
+        if ($user->another_status == 'enable') {
+            $user->status = 'disable';
+            $user->save();
+            return response()->json(['message'=> 'User is disable successfully'],200);
+        }
+        elseif ($user->another_status == 'disable') {
+            $user->status = 'enable';
+            $user->save();
+            return response()->json(['message'=> 'User is enable successfully'],200);
+        }
+}
+
 }

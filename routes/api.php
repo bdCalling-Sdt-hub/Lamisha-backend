@@ -42,7 +42,7 @@ Route::middleware(['admin', 'auth:api'])->group(function () {
     Route::post('/about-store-or-update', [AboutController::class, 'storeOrUpdate']);
     Route::get('/single-about/{id}', [AboutController::class, 'show']);
     Route::post('/about-update/{id}', [AboutController::class, 'update']);
-    
+
     //============================== Privacy ============================//
     Route::post('/privacy-store', [PrivacyPolicyController::class, 'store']);
     Route::get('/single-privacy/{id}', [PrivacyPolicyController::class, 'show']);
@@ -81,6 +81,7 @@ Route::middleware(['admin', 'auth:api'])->group(function () {
     Route::get('/all-user', [UserController::class, 'all_user']);
     Route::post('/update-profile-status', [UserController::class, 'updateProfileStatus']);
     Route::post('/client-type-update/{id}', [UserController::class, 'updatClientType']);
+    Route::get('/update-user/{id}', [UserController::class,'updateUser']);
 
     //======================= Admin management =========================//
     Route::get('/admin-management', [UserController::class, 'admin_user']);
