@@ -164,7 +164,7 @@ Route::post('/resend-otp', [UserController::class, 'resendOtp']);
 Route::post('/contact', [ContactController::class, 'contact_mail']);
 Route::post('/trial', [ContactController::class, 'coustom_trial']);
 Route::post('/parsonal-info', [IntekInformationController::class, 'parsonal_info']);
-Route::post('/buisness-info', [IntekInformationController::class, 'buisness_info'])->middleware(Cors::class);
+Route::post('/buisness-info', [IntekInformationController::class, 'buisness_info']);
 Route::post('/appoinment-info', [IntekInformationController::class, 'appointment_info']);
 Route::get('/about', [AboutController::class, 'about_index']);
 Route::get('/privacy', [PrivacyPolicyController::class, 'privacy_index']);
