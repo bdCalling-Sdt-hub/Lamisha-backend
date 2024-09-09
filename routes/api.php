@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\About\VendorController;
 use App\Http\Controllers\Api\About\TierController;
 use App\Http\Controllers\Api\Admin\PricingController;
 use App\Http\Middleware\Cors;
+use Illuminate\Support\Facades\Http;
 
 //========================For Every User Api =========================//
 Route::middleware('auth:api')->group(function () {
@@ -156,6 +157,10 @@ Route::middleware(['user_admin', 'auth:api'])->group(function () {
 
 
 //=============== Website Api with out login access this api =============//
+Route::get('/proxy-api', function () {
+    $response = Http::get('http://159.65.14.5:8000/api/buisness-info');
+    return $response->body();
+});
 Route::post('/login', [UserController::class, 'loginUser']);
 Route::post('/email-verify', [UserController::class, 'emailVerified']);
 Route::post('/forget-password', [UserController::class, 'forgetPassword']);
