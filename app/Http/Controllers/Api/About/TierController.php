@@ -121,31 +121,25 @@ public function client_tier()
     try {
         $authUser = auth()->user();
         $userEmail =  $authUser->email;
+
         if (!$userEmail) {
             return response()->json(['status' => 401, 'message' => 'Unauthorized user'], 401);
         }
-
-        $parsonalInfo = Parsonal::where('email', $userEmail)->first()->status;
-
+        $parsonalInfo = Parsonal::where('email', $userEmail)->first();
         if (!$parsonalInfo) {
             return response()->json(['status' => 400, 'message' => 'Please fill out your intake information'], 400);
         }
-
         $buisnessInfo = BuisnessInfo::where('parsonal_id', $parsonalInfo->id)->first();
         if (!$buisnessInfo || !$buisnessInfo->tier_service_interrested) {
             return response()->json(['status' => 400, 'message' => 'Please fill out your business information'], 400);
         }
         $tierId = $buisnessInfo->tier_service_interrested;
-
-    //    return $tierId = $buisnessInfo->tier_service_interested;
-        $tiers = Tier::where('id', '<=', $tierId)->orderBy('id', 'desc')->get();
-
-        if ($tiers->isEmpty()) {
+        $tiers = Tier::where('tyer_name', '<=', $tierId)->orderBy('id', 'desc')->get();
+        if (!$tiers) {
             return response()->json(['status' => 400, 'message' => 'Tier information not found'], 400);
         }
-
-        // Decode image fields
         $tiers = $tiers->map(function($tier) {
+
             $tier->protocol_image = json_decode($tier->protocol_image);
             $tier->standing_image = json_decode($tier->standing_image);
             $tier->policy_image = json_decode($tier->policy_image);
