@@ -181,7 +181,6 @@ class UserController extends Controller
 
     if (Auth::attempt($credentials)) {
         $user = Auth::user();
-
         // Check if the user account is active
         if ($user->status === 'active') {
             $token = $user->createToken('example')->plainTextToken; // Use `plainTextToken` for Sanctum
