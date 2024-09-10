@@ -89,8 +89,8 @@ class TierController extends Controller
                             if (is_array($existingFiles)) {
                                 foreach ($existingFiles as $existingFile) {
                                     $existingFileName = basename($existingFile);
-                                    if (Storage::exists('public/image/' . $existingFileName)) {
-                                        Storage::delete('public/image/' . $existingFileName);
+                                    if (Storage::exists('public/image/'.$existingFileName)) {
+                                        Storage::delete('public/image/'.$existingFileName);
                                     }
                                 }
                             }
@@ -98,9 +98,9 @@ class TierController extends Controller
                         $fileUrls = [];
                         foreach ($files as $file) {
                             if ($file->isValid()) {
-                                $fileName = time() . '_' . $file->getClientOriginalExtension();
+                                $fileName =time().'_'.$file->getClientOriginalExtension();
                                 $file->storeAs('public/image', $fileName);
-                                $fileUrls[] = '/storage/image/' . $fileName;
+                                $fileUrls[] ='/storage/image/'.$fileName;
                             }
                         }
                         $updateTier->$imageField = json_encode($fileUrls);
