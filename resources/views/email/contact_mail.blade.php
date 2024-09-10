@@ -42,13 +42,13 @@
         <h1>Contact you information</h1>
     </div>
     <div class="content">
-    <h1>First Name: {{$first_name}}</h1>
-    <h1>Last Name:{{$last_name}}</h1>
-    <h1>Phone: {{$phone}}</h1>
-    
-    <h1>Subject:{{$subject}}</h1>
-    <h1>Email: {{$email}}</h1>
-    <h1>Message: {{$sms}}</h1>
+    <h1>First Name: {{$mailData["first_name"]}}</h1>
+    <h1>Last Name:{{$mailData["last_name"]}}</h1>
+    <h1>Phone: {{$mailData["phone"]}}</h1>
+
+    <h1>Subject:{{$mailData["subject"]}}</h1>
+    <h1>Email: {{$mailData["email"]}}</h1>
+    <h1>Message: {{$mailData["sms"]}}</h1>
     </div>
 </div>
 </body>

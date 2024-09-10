@@ -7,31 +7,63 @@ use Illuminate\Http\Request;
 use App\Mail\ContactMail;
 use App\Mail\TiarMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 
 class ContactController extends Controller
 {
     public function contact_mail(Request $request)
     {
         // Validate the request data
-        $validatedData = $request->validate([
+        // $validatedData = $request->validate([
+        //     'first_name' => 'required|string|max:255',
+        //     'last_name' => 'required|string|max:255',
+        //     'phone' => 'required|string|max:15',
+        //     'subject' => 'required|string|max:255',
+        //     'email' => 'required|email|max:255',
+        //     'message' => 'required'
+        // ]);
+
+        $validator = Validator::make($request->all(),[
+
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'phone' => 'required|string|max:15',
             'subject' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'message' => 'required'
+            'message' => 'required',
+
         ]);
 
-        $superAdmin = 'info@FindaMD4Me.com';
-        $first_name = $validatedData['first_name'];
-        $last_name = $validatedData['last_name'];
-        $phone = $validatedData['phone'];
-        $subject = $validatedData['subject'];
-        $email = $validatedData['email'];
-        $sms = $validatedData['message'];
+        if ($validator->fails()){
+            return response()->json(["errors"=>$validator->errors()],400);
+        }
+
+        $mailData=[
+            'first_name' => $request->first_name,
+            'last_name'=>$request->last_name,
+            'phone' => $request->phone,
+            'subject'=>$request->subject,
+            'email'=>$request->email,
+            'sms'=>$request->message
+           ];
+
+
+
+
+
+       //$superAdmin = 'freelancerrtushar@gmail.com';
+        // $first_name = $validatedData['first_name'];
+        // $last_name = $validatedData['last_name'];
+        // $phone = $validatedData['phone'];
+        // $subject = $validatedData['subject'];
+        // $email = $validatedData['email'];
+        // $sms = $validatedData['message'];
+
 
         try {
-            Mail::to($superAdmin)->send(new ContactMail($first_name, $last_name, $phone, $subject, $email, $sms));
+
+
+            Mail::to('mdmaksudbhuiyan595@gmail.com')->send(new ContactMail($mailData));
             return response()->json(['status' => '200', 'message' => 'Mail sent successfully']);
         } catch (\Exception $e) {
             return response()->json(['status' => '500', 'message' => 'Mail sending failed', 'error' => $e->getMessage()]);
