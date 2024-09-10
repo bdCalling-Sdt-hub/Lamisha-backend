@@ -9,12 +9,15 @@ use App\Models\BuisnessInfo;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Parsonal;
 use App\Models\ClientDocument;
+use Illuminate\Support\Facades\DB;
+use Str;
+
 class TierController extends Controller
 {
 
 
     // public function updateTier(Request $request)
-    //   {        
+    //   {
     //       // Validate the request data
     //       $request->validate([
     //           'tiers.*.id' => 'required|exists:tiers,id',
@@ -60,64 +63,65 @@ class TierController extends Controller
 
     public function updateTier(Request $request)
     {
-        // Validate the request data
         $request->validate([
             'tiers.*.id' => 'required|exists:tiers,id',
+            'tiers.*.protocol_image' => 'nullable', // Ensure it can handle arrays
             'tiers.*.protocol_image.*' => 'nullable|file|mimes:pdf,jpeg,png,jpg,gif,svg|max:2048',
+            'tiers.*.standing_image' => 'nullable',
             'tiers.*.standing_image.*' => 'nullable|file|mimes:pdf,jpeg,png,jpg,gif,svg|max:2048',
+            'tiers.*.policy_image' => 'nullable',
             'tiers.*.policy_image.*' => 'nullable|file|mimes:pdf,jpeg,png,jpg,gif,svg|max:2048',
+            'tiers.*.constant_image' => 'nullable',
             'tiers.*.constant_image.*' => 'nullable|file|mimes:pdf,jpeg,png,jpg,gif,svg|max:2048',
         ]);
-    
-        foreach ($request->tiers as $tierData) {
-            $updateTier = Tier::find($tierData['id']);
-    
-            // Define the image fields to be updated
-            $imageFields = [
-                'protocol_image',
-                'standing_image',
-                'policy_image',
-                'constant_image'
-            ];
-    
-            foreach ($imageFields as $imageField) {
-                if (isset($tierData[$imageField]) && count($tierData[$imageField]) > 0) {
-                    // Delete existing images for this field
-                    if ($updateTier->$imageField) {
-                        $existingFiles = json_decode($updateTier->$imageField, true);
-                        foreach ($existingFiles as $existingFile) {
-                            $existingFileName = basename($existingFile);
-                            Storage::delete('public/image/' . $existingFileName);
-                        }
-                    }
-    
-                    // Store the new image files
-                    $fileUrls = [];
-                    foreach ($tierData[$imageField] as $file) {
-                        if ($file->isValid()) {
-                            $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                            $file->storeAs('public/image', $fileName);
-                            $fileUrls[] = '/storage/image/' . $fileName;
-                        }
-                    }
-    
-                    // Store the array of URLs as a JSON string in the database
-                    $updateTier->$imageField = json_encode($fileUrls);
-                }
-            }
-    
-            $updateTier->save();
-        }
-    
-        return response()->json(['status' => 200, 'message' => 'Update successful']);
-    }
-      
 
-    
+        DB::beginTransaction();
+
+        try {
+            foreach ($request->tiers as $tierData) {
+                $updateTier = Tier::find($tierData['id']);
+                $imageFields = ['protocol_image', 'standing_image', 'policy_image', 'constant_image'];
+                foreach ($imageFields as $imageField) {
+                    if (isset($tierData[$imageField])) {
+                        $files = is_array($tierData[$imageField]) ? $tierData[$imageField] : [$tierData[$imageField]];
+                        if ($updateTier->$imageField) {
+                            $existingFiles = json_decode($updateTier->$imageField, true);
+                            if (is_array($existingFiles)) {
+                                foreach ($existingFiles as $existingFile) {
+                                    $existingFileName = basename($existingFile);
+                                    if (Storage::exists('public/image/' . $existingFileName)) {
+                                        Storage::delete('public/image/' . $existingFileName);
+                                    }
+                                }
+                            }
+                        }
+                        $fileUrls = [];
+                        foreach ($files as $file) {
+                            if ($file->isValid()) {
+                                $fileName = time() . '_' . $file->getClientOriginalExtension();
+                                $file->storeAs('public/image', $fileName);
+                                $fileUrls[] = '/storage/image/' . $fileName;
+                            }
+                        }
+                        $updateTier->$imageField = json_encode($fileUrls);
+                    }
+                }
+
+                $updateTier->save();
+            }
+
+            DB::commit();
+
+            return response()->json(['status' => 200, 'message' => 'Update successful']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['status' => 500, 'message' => 'Update failed', 'error' => $e->getMessage()], 500);
+        }
+    }
 
 
     public function show_tiear()
-    {     
+    {
        return $tierData = Tier::get();
 
         if (!$tierData) {
@@ -145,7 +149,7 @@ class TierController extends Controller
 //         }
 //         $tierId = $buisnessInfo->tier_service_interrested;
 //         $tiers = Tier::where('id', '<=', $tierId)->orderBy('id', 'desc')->get();
-      
+
 //         if ($tiers->isEmpty()) {
 //             return response()->json(['status' => 400, 'message' => 'Tier information not found'], 400);
 //         }
@@ -170,7 +174,7 @@ public function client_tier()
 
         $clientDocument = ClientDocument::where('user_id', $authUser->id)->first()->status;
         $parsonalInfo = Parsonal::where('email', $userEmail)->first();
-        
+
         if (!$parsonalInfo) {
             return response()->json(['status' => 400, 'message' => 'Please fill out your intake information'], 400);
         }
@@ -212,7 +216,7 @@ public function client_tier()
 }
 
 
-    
+
 
     // Web tier //
 
@@ -220,12 +224,12 @@ public function client_tier()
     {
         // Fetch the tiers with related prices
         $tierData = Tier::with('price')->orderBy('id', 'desc')->get();
-    
+
         // Check if any tier data is returned
         if ($tierData->isEmpty()) {
             return response()->json(['message' => 'Record not found'], 404);
         }
-    
+
         // Decode the 'service' field for each price entry
         foreach ($tierData as $tier) {
             foreach ($tier->price as $price) {
@@ -235,9 +239,9 @@ public function client_tier()
                 }
             }
         }
-    
+
         return response()->json(['status' => 200, 'data' => $tierData]);
     }
-    
+
 
 }
