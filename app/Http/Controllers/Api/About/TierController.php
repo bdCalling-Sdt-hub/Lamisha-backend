@@ -118,7 +118,6 @@ class TierController extends Controller
 
 public function client_tier()
 {
-
     try {
         $authUser = auth()->user();
         $userEmail =  $authUser->email;
@@ -126,7 +125,7 @@ public function client_tier()
             return response()->json(['status' => 401, 'message' => 'Unauthorized user'], 401);
         }
 
-        $parsonalInfo = Parsonal::where('email', $userEmail)->first();
+        $parsonalInfo = Parsonal::where('email', $userEmail)->first()->status;
 
         if (!$parsonalInfo) {
             return response()->json(['status' => 400, 'message' => 'Please fill out your intake information'], 400);
@@ -157,7 +156,7 @@ public function client_tier()
         return response()->json([
             'status' => 200,
             'data' => $tiers,
-            'document_status' => $clientDocument
+            'document_status' => $clientDocument ??null,
         ]);
     } catch (\Exception $e) {
         return response()->json([
