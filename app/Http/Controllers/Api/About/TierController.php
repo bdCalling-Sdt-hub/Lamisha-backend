@@ -83,39 +83,6 @@ class TierController extends Controller
         return response()->json(['status' => 200, 'data' => $tierData]);
     }
 
-//     public function client_tier()
-// {
-//     try {
-//         $authUser = auth()->user();
-//         $userEmail =  $authUser->email;
-//         if (!$userEmail) {
-//             return response()->json(['status' => 401, 'message' => 'Unauthorized user'], 401);
-//         }
-//         $clientDocuemnt = ClientDocument::where('user_id', $authUser)->first();
-//         $parsonalInfo = Parsonal::where('email', $userEmail)->first();
-//         if (!$parsonalInfo) {
-//             return response()->json(['status' => 400, 'message' => 'Please fill out your intake information'], 400);
-//         }
-//         $buisnessInfo = BuisnessInfo::where('parsonal_id', $parsonalInfo->id)->first();
-//         if (!$buisnessInfo || !$buisnessInfo->tier_service_interrested) {
-//             return response()->json(['status' => 400, 'message' => 'Please fill out your business information'], 400);
-//         }
-//         $tierId = $buisnessInfo->tier_service_interrested;
-//         $tiers = Tier::where('id', '<=', $tierId)->orderBy('id', 'desc')->get();
-
-//         if ($tiers->isEmpty()) {
-//             return response()->json(['status' => 400, 'message' => 'Tier information not found'], 400);
-//         }
-//         return response()->json(['status' => 200, 'data' => $tiers, 'client_document'=>$clientDocuemnt]);
-//     } catch (\Exception $e) {
-//         return response()->json([
-//             'status' => 500,
-//             'message' => 'An unexpected error occurred',
-//             'error' => $e->getMessage()
-//         ], 500);
-//     }
-// }
-
 public function client_tier()
 {
     try {
@@ -161,7 +128,6 @@ public function client_tier()
     }
 }
 
-    // Web tier //
 
     public function showTiearPricing()
     {
