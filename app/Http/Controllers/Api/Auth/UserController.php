@@ -199,16 +199,16 @@ public function user()
 {
     $totalNotification = Notification::where('read_at', null)->count();
     $user = Auth::user();
-
     if ($user) {
         $userEmail = $user->email;
         $IntackInfo = Parsonal::where('email', $userEmail)->first();
-
         $parsonalId = $IntackInfo ? $IntackInfo->id : null;
         $buisnessData = $parsonalId ? BuisnessInfo::where('parsonal_id', $parsonalId)->first() : null;
-        $tierId = $buisnessData ? $buisnessData->tier_service_interrested : null;
-        $tierData = $tierId ? Tier::find($tierId) : null;
-
+        $tierName = $buisnessData ? $buisnessData->tier_service_interrested : null;
+        if(!$tierName){
+            return response()->json(['status'=> 401,'message'=> 'No Tier Name found!!']);
+        }
+        $tierData =Tier::where('tyer_name',$tierName)->get();
         return response()->json([
             'status' => 200,
             'user' => $user,
@@ -220,7 +220,6 @@ public function user()
         return response()->json(['status' => 401, 'message' => 'No user authenticated'], 401);
     }
 }
-
 
     public function updatePassword(Request $request)
     {
