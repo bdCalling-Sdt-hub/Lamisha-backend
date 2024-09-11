@@ -205,10 +205,8 @@ public function user()
         $parsonalId = $IntackInfo ? $IntackInfo->id : null;
         $buisnessData = $parsonalId ? BuisnessInfo::where('parsonal_id', $parsonalId)->first() : null;
         $tierName = $buisnessData ? $buisnessData->tier_service_interrested : null;
-        if(!$tierName){
-            return response()->json(['status'=> 401,'message'=> 'No Tier Name found!!']);
-        }
-        $tierData =Tier::where('tyer_name',$tierName)->get();
+
+        $tierData = $tierName ? Tier::where('tyer_name',$tierName)->get() : null;
         return response()->json([
             'status' => 200,
             'user' => $user,
