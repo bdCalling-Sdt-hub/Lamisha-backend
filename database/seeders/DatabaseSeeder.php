@@ -15,11 +15,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        
+
         User::create([
             'first_name' => 'Admin',
             'last_name'=> '',
-            'email' => 'admin@gmail.com',
+            'email' => 'lameshadavis@gmail.com',
             'password'=>Hash::make('123456789'),
             'user_type'=>'ADMIN',
             'verify_email'=> Carbon::now(),
