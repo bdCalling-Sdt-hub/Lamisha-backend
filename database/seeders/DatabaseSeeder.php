@@ -18,11 +18,13 @@ class DatabaseSeeder extends Seeder
 
         User::create([
             'first_name' => 'Admin',
-            'last_name'=> '',
+            'last_name'=> 'Lamesha',
             'email' => 'lameshadavis@gmail.com',
             'password'=>Hash::make('123456789'),
             'user_type'=>'ADMIN',
-            'verify_email'=> Carbon::now(),
+            'status'=> 'active',
+            'verify_email'=> 1,
+            'otp'=> 0,
 
         ]);
     }
