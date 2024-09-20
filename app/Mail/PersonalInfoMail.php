@@ -16,7 +16,7 @@ class PersonalInfoMail extends Mailable
     public $lastName;
     public $email;
     public $phone;
- 
+
     /**
      * Create a new message instance.
      */

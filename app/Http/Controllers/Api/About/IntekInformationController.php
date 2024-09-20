@@ -25,14 +25,12 @@ class IntekInformationController extends Controller
             $validated['state_license_certificate'] = json_encode($validated['state_license_certificate']);
         }
         if ($existing_user) {
-            return response()->json(['status' => 409, 'message' => 'We already have a intake on file with this email please contact us at'. $request->eamil, 'data' => $existing_user], 409);
+            return response()->json(['status' => 409, 'message' => 'We already have a intake on file with this email please contact us at info@findamd4me.com', 'data' => $existing_user], 409);
         } else {
             $inserted_id = DB::table('parsonals')->insertGetId($validated);
 
             if ($inserted_id) {
                 $new_data = DB::table('parsonals')->where('id', $inserted_id)->first();
-
-                Mail::to('signup@FindaMD4Me.com')->send(new PersonalInfoMail($request->first_name, $request->last_name, $request->email, $request->phone));
 
                 // Send notification
                 $parsonal = Parsonal::find($inserted_id);
@@ -47,6 +45,7 @@ class IntekInformationController extends Controller
         }
     }
 
+
     public function buisness_info(BuisnessRequest $request)
     {
        $what_state_anicipate_service= array($request->what_state_anicipate_service);
@@ -58,12 +57,16 @@ class IntekInformationController extends Controller
             $validated['what_state_anicipate_service'] = json_encode($validated['what_state_anicipate_service']);
         }
          $existing_user = DB::table('parsonals')->where('id', $request->parsonal_id)->first();
+
         if (! $existing_user) {
             return response()->json(['status'=>409,'message' => 'Plese filup parsonal inforamtion', 'data' => $existing_user], 409);
         } else {
             $inserted_id = DB::table('buisness_infos')->insertGetId($validated);
+
             if ($inserted_id) {
                 $new_data = DB::table('buisness_infos')->where('id', $inserted_id)->first();
+
+                Mail::to('signup@FindaMD4Me.com')->send(new PersonalInfoMail($existing_user->first_name, $existing_user->last_name,$existing_user->email, $existing_user->phone));
                 return response()->json(['status'=>200,'message' => 'Data inserted successfully', 'data' => $new_data], 201);
             } else {
                 return response()->json([ 'status'=>500,'message' => 'Data insertion failed'], 500);
