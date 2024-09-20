@@ -34,7 +34,6 @@ class UserController extends Controller
             ->where('verify_email', 0)
             ->first();
         if ($user) {
-
             $random = Str::random(6);
             Mail::to($request->email)->send(new SendOtp($random));
             $user->update(['otp' => $random]);

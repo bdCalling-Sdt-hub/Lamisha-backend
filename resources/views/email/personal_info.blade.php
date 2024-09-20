@@ -9,7 +9,7 @@
     <p><strong>Last Name:</strong> {{ $lastName }}</p>
     <p><strong>Email:</strong> {{ $email }}</p>
     <p><strong>Phone:</strong> {{ $phone }}</p>
-    <p><strong>Visit url: </strong> <a href='http://192.168.10.201:3003/total-list' target="_blank"> Visit your deashboard</a></p>
+    <p><strong>Visit url: </strong> <a href='http://192.168.10.201:3003/total-list' target="_blank"> visit your dashboard</a></p>
     <!-- Add more fields as needed -->
 </body>
 </html>

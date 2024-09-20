@@ -29,13 +29,13 @@ class TiarMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Tiar Mail',
+            subject: 'Custom Tier Request',
         );
     }
 
     /**
      * Get the message content definition.
-     */ 
+     */
     public function content(): Content
     {
         return new Content(

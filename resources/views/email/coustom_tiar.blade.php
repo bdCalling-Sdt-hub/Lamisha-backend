@@ -64,18 +64,18 @@
 <body>
     <div class="container">
         <div class="header ">
-            <h1>Coustom Trial Message</h1>
+            <h1>Custom Tier Message</h1>
         </div>
         <p>Email: {{ $email }}</p>
         <p>Trial Name: {{ $trial }}</p>
-        
+
     </div>
 
 
-    
-    
-   
-    
+
+
+
+
 
 </body>
 </html>
