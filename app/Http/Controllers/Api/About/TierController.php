@@ -10,23 +10,24 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Parsonal;
 use App\Models\ClientDocument;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Str;
 
 class TierController extends Controller
 {
     public function updateTier(Request $request)
     {
-        $request->validate([
-            'tiers.*.id' => 'required|exists:tiers,id',
-            'tiers.*.protocol_image' => 'nullable', // Ensure it can handle arrays
-            'tiers.*.protocol_image.*' => 'nullable|file|mimes:pdf,jpeg,png,jpg,gif,svg|max:2048',
-            'tiers.*.standing_image' => 'nullable',
-            'tiers.*.standing_image.*' => 'nullable|file|mimes:pdf,jpeg,png,jpg,gif,svg|max:2048',
-            'tiers.*.policy_image' => 'nullable',
-            'tiers.*.policy_image.*' => 'nullable|file|mimes:pdf,jpeg,png,jpg,gif,svg|max:2048',
-            'tiers.*.constant_image' => 'nullable',
-            'tiers.*.constant_image.*' => 'nullable|file|mimes:pdf,jpeg,png,jpg,gif,svg|max:2048',
+        $validator = Validator::make($request->all(),[
+           'tiers.*.protocol_image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'tiers.*.standing_image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'tiers.*.policy_image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'tiers.*.constant_image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'tiers.*.id' => 'required|exists:tiers,id', // Ensure that the tier ID exists
         ]);
+
+        if ($validator->fails()){
+            return response()->json(["errors"=>$validator->errors()],400);
+        }
 
         DB::beginTransaction();
 
