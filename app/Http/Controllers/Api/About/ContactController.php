@@ -56,7 +56,7 @@ class ContactController extends Controller
 
     public function coustom_trial(Request $request)
     {
-        $superAdmin = 'info@FindaMD4Me.com';
+        $superAdmin = 'info@findamd4me.com';
         $email = $request->email;
         $trial = $request->trial;
         try {
