@@ -21,10 +21,10 @@ class PricingRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [           
+        return [
             'price_1'=>'required',
             'price_2'=>'required',
-            'pricing_type'=> 'required',
+            // 'pricing_type'=> 'required',
             'duration'=>'required',
             'service'=>'required',
         ];
