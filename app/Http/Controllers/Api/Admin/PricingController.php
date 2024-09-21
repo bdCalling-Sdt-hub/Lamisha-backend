@@ -43,7 +43,7 @@ class PricingController extends Controller
         $addPriceing->tier_id = $addTiear->id;
         $addPriceing->price_1 = $request->price_1;
         $addPriceing->price_2 = $request->price_2;
-        // $addPriceing->pricing_type = $request->pricing_type;
+        $addPriceing->pricing_type = $request->pricing_type;
         $addPriceing->duration = $request->duration;
         $addPriceing->service = json_encode($request->service);
         $addPriceing->save();
@@ -64,7 +64,7 @@ class PricingController extends Controller
         $Priceing = Price::where('tier_id',$request->id)->first();
         $Priceing->price_1 = $request->price_1 ? : $Priceing->price_1;
         $Priceing->price_2 = $request->price_2 ? : $Priceing->price_2;
-        // $Priceing->pricing_type = $request->pricing_type ? : $Priceing->pricing_type;
+        $Priceing->pricing_type = $request->pricing_type ? : $Priceing->pricing_type;
         $Priceing->duration = $request->duration? : $Priceing->duration;
         $Priceing->service = json_encode($request->service);
         $Priceing->save();
