@@ -60,7 +60,7 @@ class ContactController extends Controller
         $email = $request->email;
         $trial = $request->trial;
         try {
-            Mail::to($superAdmin)->send(new TiarMail( $email, $trial));
+            Mail::to($superAdmin)->send(new TiarMail( 'info@findamd4me.com', $trial));
             return response()->json(['status' => '200', 'message' => 'Mail sent successfully']);
         } catch (\Exception $e) {
             return response()->json(['status' => '500', 'message' => 'Mail sending failed', 'error' => $e->getMessage()]);
