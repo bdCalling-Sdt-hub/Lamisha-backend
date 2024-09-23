@@ -341,14 +341,24 @@ public function user()
 
     public function update_profile_all_user()
     {
-        $update_profile_user_ids = UpdateProfile::pluck('user_id');
-        $users = User::whereIn('user_type', 'USER')->get();
-        if ($users) {
-            return response()->json(['status' => '200', 'data' => $users]);
-        } else {
-            return response()->json(['status' => '401', 'message' => 'User data not found'], 401);
+        // Retrieve users with user_type 'USER'
+        $users = User::whereIn('user_type', ['USER'])->get();
+
+        // Retrieve all update profiles
+        $updateProfiles = UpdateProfile::all()->keyBy('user_id');
+
+        // Attach update profiles to users
+        foreach ($users as $user) {
+            $user->updateProfiles = $updateProfiles->get($user->id, []);
         }
+
+        return response()->json([
+            'status' => '200',
+            'data' => $users,
+        ]);
     }
+
+
 
     public function singel_user_update_profile_data($id)
     {
