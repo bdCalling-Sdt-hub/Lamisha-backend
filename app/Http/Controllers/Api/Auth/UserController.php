@@ -539,15 +539,14 @@ public function user()
 
 public function all_user(Request $request)
 {
-    // Get the users with their related data
-    $users = User::with('user_update')->orderBy('id', 'desc')->get(); // Use get() instead of all()
 
-    // Initialize an array to hold the results
+    $users = User::with('user_update')->orderBy('id', 'desc')->get(); // Use get() instead of all()
     $results = [];
 
     foreach ($users as $user) {
-        // Get the personal info based on the user's email
-        $personalInfo = Parsonal::where('email', $user->email)->first();
+
+        $personalInfo = Parsonal::where('email', 'mithilakhan082@gmail.com')->first();
+        // return $personalInfo;
 
         if ($personalInfo) {
             // Get the personal ID

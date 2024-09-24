@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Billing;
 use Illuminate\Http\Request;
 use App\Http\Requests\BillingRequest;
 use Illuminate\Support\Facades\Mail;
@@ -51,47 +52,30 @@ class DocumentControler extends Controller
         // Send the billing email with the uploaded files
         Mail::to($admin_mail)->send(new BillingMail($email, $onboarding_fee_path, $ach_payment_path, $vendor_ordering_path));
 
+        Billing::create([
+            'user_id' => $auth_user->id,
+            'onoarding_fee' => $onboarding_fee_path,
+            'ach_payment' => $ach_payment_path,
+            'vendor_ordering' => $vendor_ordering_path,
+        ]);
         return response()->json(['status' => 200, 'message' => 'Billing information submitted and email sent successfully.']);
     }
 
 
+    public function get_billing()
+    {
+        // Assuming you have a Billing model to fetch records
+        $auth_user = Auth::user();
 
-    // public function billing(Request $request)
-    // {
-    //     // Administrator email
-    //     $admin_mail = 'info@FindaMD4Me.com';
+        // Fetch billing records for the authenticated user
+        $billings = Billing::where('user_id', $auth_user->id)->get();
 
-    //     // Authenticated user email
-    //     $auth_user = Auth::user();
-    //     $email = $auth_user->email;
+        if ($billings->isEmpty()) {
+            return response()->json(['message' => 'No billing records found.'], 404);
+        }
 
-    //     $onoarding_fee_path = null;
-    //     if ($request->hasFile('onoarding_fee')) {
-    //         $onoarding_fee_path = $request->file('onoarding_fee')->store('PaymentHistory', 'public');
-    //     } else {
-    //         return response()->json(['status'=>400,'message' => 'onboarding fee upload failed'], 400);
-    //     }
-
-    //     $ach_payment_path = null;
-    //     if ($request->hasFile('ach_payment')) {
-    //         $ach_payment_path = $request->file('ach_payment')->store('PaymentHistory', 'public');
-    //     } else {
-    //         return response()->json(['status'=>400,'message' => 'ach payment upload failed'], 400);
-    //     }
-
-    //     $payment_date = $request->payment_date;
-
-    //     $vendor_ordering_path = null;
-    //     if ($request->hasFile('vendor_ordering')) {
-    //         $vendor_ordering_path = $request->file('vendor_ordering')->store('PaymentHistory', 'public');
-    //     } else {
-    //         return response()->json(['status'=>400, 'message' => 'vendor ordering upload failed'], 400);
-    //     }
-
-
-    //     Mail::to($admin_mail)->send(new BillingMail($email, $onoarding_fee_path, $ach_payment_path, $payment_date, $vendor_ordering_path));
-    //     return response()->json(['status'=>200,'sending your mail successfully']);
-    // }
+        return response()->json(['status' => 200, 'billings' => $billings], 200);
+    }
 
     public function store_document(Request $request)
 {
