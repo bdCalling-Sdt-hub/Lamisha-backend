@@ -58,9 +58,6 @@ class BillingMail extends Mailable
         $email = $this->view('emails.billing')
                       ->with([
                           'email' => $this->email,
-                        //   'payment_date' => $this->payment_date,
-                        //   'appoinment_date' => $this->appoinment_date,
-                        //   'appoinment_time' => $this->appoinment_time,
                       ]);
 
         if ($this->onoarding_fee_path) {
