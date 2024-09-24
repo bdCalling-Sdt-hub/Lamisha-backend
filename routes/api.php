@@ -134,6 +134,7 @@ Route::middleware(['user', 'auth:api'])->group(function () {
 
     Route::post('/upload-document', [DocumentControler::class, 'store_document']);
     Route::post('/billing-send-mail', [DocumentControler::class, 'billing']);
+    Route::get('/get-billing', [DocumentControler::class, 'get_billing']);
     Route::post('/update-aggriment', [DocumentControler::class, 'update_document']);
     Route::post('/update-document-appoinment', [DocumentControler::class, 'updateDocumentAppoinment']);
     Route::post('/store-teme', [MyteamController::class, 'store_teame']);
