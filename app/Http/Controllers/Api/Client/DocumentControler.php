@@ -23,12 +23,8 @@ class DocumentControler extends Controller
     public function billing(Request $request)
     {
         $admin_mail = 'info@FindaMD4Me.com';
-
-        // Authenticated user email
         $auth_user = Auth::user();
         $email = $auth_user->email;
-
-        // Validate required file uploads and payment date
         $validator = Validator::make($request->all(), [
             'onboarding_fee' => 'required|file|mimes:pdf,jpeg,png,jpg|max:5120',
             'ach_payment' => 'required|file|mimes:pdf,jpeg,png,jpg|max:5120',
@@ -38,13 +34,10 @@ class DocumentControler extends Controller
         if ($validator->fails()) {
             return response()->json(['message' => 'Validation Error', 'errors' => $validator->errors()], 422);
         }
-
-        // Store the uploaded files
         $onboarding_fee_path = $request->file('onboarding_fee')->store('PaymentHistory', 'public');
         $ach_payment_path = $request->file('ach_payment')->store('PaymentHistory', 'public');
         $vendor_ordering_path = $request->file('vendor_ordering')->store('PaymentHistory', 'public');
 
-        // Send the billing email with the uploaded files
         Mail::to($admin_mail)->send(new BillingMail($email, $onboarding_fee_path, $ach_payment_path, $vendor_ordering_path));
 
         Billing::updateOrCreate([
