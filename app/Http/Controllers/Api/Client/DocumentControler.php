@@ -52,7 +52,7 @@ class DocumentControler extends Controller
         // Send the billing email with the uploaded files
         Mail::to($admin_mail)->send(new BillingMail($email, $onboarding_fee_path, $ach_payment_path, $vendor_ordering_path));
 
-        Billing::create([
+        Billing::updateOrCreate([
             'user_id' => $auth_user->id,
             'onoarding_fee' => $onboarding_fee_path,
             'ach_payment' => $ach_payment_path,
@@ -64,12 +64,8 @@ class DocumentControler extends Controller
 
     public function get_billing()
     {
-        // Assuming you have a Billing model to fetch records
         $auth_user = Auth::user();
-
-        // Fetch billing records for the authenticated user
-        $billings = Billing::where('user_id', $auth_user->id)->get();
-
+        $billings = Billing::where('user_id', $auth_user->id)->first();
         if ($billings->isEmpty()) {
             return response()->json(['message' => 'No billing records found.'], 404);
         }
