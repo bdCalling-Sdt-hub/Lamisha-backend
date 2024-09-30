@@ -30,22 +30,17 @@ class DocumentControler extends Controller
 
         // Validate required file uploads and payment date
         $validator = Validator::make($request->all(), [
-            'onoarding_fee' => 'required|file|mimes:pdf,jpeg,png,jpg|max:5120',
+            'onboarding_fee' => 'required|file|mimes:pdf,jpeg,png,jpg|max:5120',
             'ach_payment' => 'required|file|mimes:pdf,jpeg,png,jpg|max:5120',
             'vendor_ordering' => 'required|file|mimes:pdf,jpeg,png,jpg|max:5120',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['Validation Error', $validator->errors(), 422]);
-        }
-
-        // Check if files are received
-        if (!$request->hasFile('onoarding_fee') || !$request->hasFile('ach_payment') || !$request->hasFile('vendor_ordering')) {
-            return response()->json(['message' => 'One or more files are missing.'], 400);
+            return response()->json(['message' => 'Validation Error', 'errors' => $validator->errors()], 422);
         }
 
         // Store the uploaded files
-        $onboarding_fee_path = $request->file('onoarding_fee')->store('PaymentHistory', 'public');
+        $onboarding_fee_path = $request->file('onboarding_fee')->store('PaymentHistory', 'public');
         $ach_payment_path = $request->file('ach_payment')->store('PaymentHistory', 'public');
         $vendor_ordering_path = $request->file('vendor_ordering')->store('PaymentHistory', 'public');
 
@@ -54,12 +49,15 @@ class DocumentControler extends Controller
 
         Billing::updateOrCreate([
             'user_id' => $auth_user->id,
-            'onoarding_fee' => $onboarding_fee_path,
+        ], [
+            'onboarding_fee' => $onboarding_fee_path,
             'ach_payment' => $ach_payment_path,
             'vendor_ordering' => $vendor_ordering_path,
         ]);
+
         return response()->json(['status' => 200, 'message' => 'Billing information submitted and email sent successfully.']);
     }
+
     public function get_billing()
     {
         $auth_user = Auth::user();
@@ -68,16 +66,13 @@ class DocumentControler extends Controller
         if (!$billings) {
             return response()->json(['message' => 'No billing records found.'], 404);
         }
-        $onboarding_fee_name = basename($billings->onboarding_fee);
-        $ach_payment_name = basename($billings->ach_payment);
-        $vendor_ordering_name = basename($billings->vendor_ordering);
 
         return response()->json([
             'status' => 200,
             'billings' => [
-                'onboarding_fee' => $onboarding_fee_name,
-                'ach_payment' => $ach_payment_name,
-                'vendor_ordering' => $vendor_ordering_name,
+                'onboarding_fee' => basename($billings->onboarding_fee),
+                'ach_payment' => basename($billings->ach_payment),
+                'vendor_ordering' => basename($billings->vendor_ordering),
             ],
         ], 200);
     }
