@@ -450,17 +450,17 @@ public function user()
 
 
     public function logoutUser(Request $request)
-{
-    // Ensure the user is authenticated
-    if (Auth::check()) {
-        // Revoke the current user's token
-        $request->user()->currentAccessToken()->delete();
+    {
+        // Ensure the user is authenticated
+        if (Auth::check()) {
+            // Revoke the current user's token
+            $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['status' => '200', 'message' => 'Successfully logged out']);
-    } else {
-        return response()->json(['status' => '401', 'message' => 'No user authenticated'], 401);
+            return response()->json(['status' => '200', 'message' => 'Successfully logged out']);
+        } else {
+            return response()->json(['status' => '401', 'message' => 'No user authenticated'], 401);
+        }
     }
-}
     // public function delete_user($id)
     // {
 
