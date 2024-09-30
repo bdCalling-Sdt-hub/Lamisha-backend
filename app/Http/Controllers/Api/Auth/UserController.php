@@ -22,6 +22,7 @@ use App\Models\BuisnessInfo;
 use App\Models\Appoinment;
 use App\Models\Tier;
 use App\Models\Notification;
+use App\Notifications\ProfileUpdateNotification;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 
@@ -323,6 +324,10 @@ public function user()
             }
 
             $newProfileUpdate->save();
+            if ($user->user_type === 'USER') {
+                $admin= User::where('user_type', 'ADMIN')->first();
+                $admin->notify(new ProfileUpdateNotification($newProfileUpdate));
+            }
 
             return response()->json([
                 'status' => 200,
