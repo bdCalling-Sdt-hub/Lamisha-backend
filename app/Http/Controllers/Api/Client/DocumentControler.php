@@ -66,7 +66,7 @@ class DocumentControler extends Controller
     {
         $auth_user = Auth::user();
         $billings = Billing::where('user_id', $auth_user->id)->first();
-        if ($billings->isEmpty()) {
+        if (!$billings) {
             return response()->json(['message' => 'No billing records found.'], 404);
         }
 
