@@ -12,7 +12,9 @@ class CoveredController extends Controller
      */
     public function index()
     {
-        $state = stateCvered::all();
+        $state = StateCvered::orderBy('state_name', 'asc')->get();
+
+        return $state;
         if($state){
             return response()->json(['status'=>'200', 'data'=>$state]);
         }else{

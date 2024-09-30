@@ -10,68 +10,87 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Parsonal;
 use App\Models\ClientDocument;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Str;
 
 class TierController extends Controller
 {
     public function updateTier(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'tiers.*.id' => 'required|exists:tiers,id',
-            'tiers.*.protocol_image' => 'nullable', // Ensure it can handle arrays
-            'tiers.*.protocol_image.*' => 'nullable|file|mimes:pdf,jpeg,png,jpg,gif,svg|max:2048',
-            'tiers.*.standing_image' => 'nullable',
-            'tiers.*.standing_image.*' => 'nullable|file|mimes:pdf,jpeg,png,jpg,gif,svg|max:2048',
-            'tiers.*.policy_image' => 'nullable',
-            'tiers.*.policy_image.*' => 'nullable|file|mimes:pdf,jpeg,png,jpg,gif,svg|max:2048',
-            'tiers.*.constant_image' => 'nullable',
-            'tiers.*.constant_image.*' => 'nullable|file|mimes:pdf,jpeg,png,jpg,gif,svg|max:2048',
+
+            'tiers.*.protocol_image' => 'nullable|array',
+            'tiers.*.protocol_image.*' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,pdf|max:5120',
+
+            'tiers.*.standing_image' => 'nullable|array',
+            'tiers.*.standing_image.*' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,pdf|max:5120',
+
+            'tiers.*.policy_image' => 'nullable|array',
+            'tiers.*.policy_image.*' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,pdf|max:5120',
+
+            'tiers.*.constant_image' => 'nullable|array',
+            'tiers.*.constant_image.*' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,pdf|max:5120',
         ]);
 
-        DB::beginTransaction();
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
-        try {
-            foreach ($request->tiers as $tierData) {
-                $updateTier = Tier::find($tierData['id']);
-                $imageFields = ['protocol_image', 'standing_image', 'policy_image', 'constant_image'];
-                foreach ($imageFields as $imageField) {
-                    if (isset($tierData[$imageField])) {
-                        $files = is_array($tierData[$imageField]) ? $tierData[$imageField] : [$tierData[$imageField]];
-                        if ($updateTier->$imageField) {
-                            $existingFiles = json_decode($updateTier->$imageField, true);
-                            if (is_array($existingFiles)) {
-                                foreach ($existingFiles as $existingFile) {
-                                    $existingFileName = basename($existingFile);
-                                    if (Storage::exists('public/image/'.$existingFileName)) {
-                                        Storage::delete('public/image/'.$existingFileName);
-                                    }
+
+    DB::beginTransaction();
+
+    try {
+        foreach ($request->tiers as $tierData) {
+            $updateTier = Tier::find($tierData['id']);
+            $imageFields = ['protocol_image', 'standing_image', 'policy_image', 'constant_image'];
+
+            foreach ($imageFields as $imageField) {
+                if (isset($tierData[$imageField])) {
+                    $files = is_array($tierData[$imageField]) ? $tierData[$imageField] : [$tierData[$imageField]];
+                    if ($updateTier->$imageField) {
+                        $existingFiles = json_decode($updateTier->$imageField, true);
+                        if (is_array($existingFiles)) {
+                            foreach ($existingFiles as $existingFile) {
+                                $existingFileName = basename($existingFile);
+                                if (Storage::exists('public/image/' . $existingFileName)) {
+                                    Storage::delete('public/image/' . $existingFileName);
+                                }
+                                if (Storage::exists('public/pdf/' . $existingFileName)) {
+                                    Storage::delete('public/pdf/' . $existingFileName);
                                 }
                             }
                         }
-                        $fileUrls = [];
-                        foreach ($files as $file) {
-                            if ($file->isValid()) {
-                                $fileName =time().'_'.$file->getClientOriginalExtension();
+                    }
+                    $fileUrls = [];
+                    foreach ($files as $file) {
+                        if ($file->isValid()) {
+                            $fileExtension = $file->getClientOriginalExtension();
+                            $fileName = time() . '_' . uniqid() . '.' . $fileExtension;
+                            if (in_array($fileExtension, ['jpeg', 'png', 'jpg', 'gif', 'svg'])) {
                                 $file->storeAs('public/image', $fileName);
-                                $fileUrls[] ='/storage/image/'.$fileName;
+                                $fileUrls[] = '/storage/image/' . $fileName;
+                            } elseif ($fileExtension === 'pdf') {
+                                $file->storeAs('public/pdf', $fileName);
+                                $fileUrls[] = '/storage/pdf/' . $fileName;
                             }
                         }
-                        $updateTier->$imageField = json_encode($fileUrls);
                     }
+                    $updateTier->$imageField = json_encode($fileUrls);
                 }
-
-                $updateTier->save();
             }
+            $updateTier->save();
+        }
+        DB::commit();
+        return response()->json(['message' => 'Tiers updated successfully!'], 200);
 
-            DB::commit();
-
-            return response()->json(['status' => 200, 'message' => 'Update successful']);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['status' => 500, 'message' => 'Update failed', 'error' => $e->getMessage()], 500);
+            Log::error('Tier update error: ', ['error' => $e->getMessage()]);
+            return response()->json(['error' => 'An error occurred while updating tiers.'], 500);
         }
     }
-
 
     public function show_tiear()
     {

@@ -22,6 +22,7 @@ use App\Models\BuisnessInfo;
 use App\Models\Appoinment;
 use App\Models\Tier;
 use App\Models\Notification;
+use App\Notifications\ProfileUpdateNotification;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 
@@ -323,6 +324,10 @@ public function user()
             }
 
             $newProfileUpdate->save();
+            if ($user->user_type === 'USER') {
+                $admin= User::where('user_type', 'ADMIN')->first();
+                $admin->notify(new ProfileUpdateNotification($newProfileUpdate));
+            }
 
             return response()->json([
                 'status' => 200,
@@ -341,14 +346,24 @@ public function user()
 
     public function update_profile_all_user()
     {
-        $update_profile_user_ids = UpdateProfile::pluck('user_id');
-        $users = User::whereIn('user_type', 'USER')->get();
-        if ($users) {
-            return response()->json(['status' => '200', 'data' => $users]);
-        } else {
-            return response()->json(['status' => '401', 'message' => 'User data not found'], 401);
+        // Retrieve users with user_type 'USER'
+        $users = User::whereIn('user_type', ['USER'])->get();
+
+        // Retrieve all update profiles
+        $updateProfiles = UpdateProfile::all()->keyBy('user_id');
+
+        // Attach update profiles to users
+        foreach ($users as $user) {
+            $user->updateProfiles = $updateProfiles->get($user->id, []);
         }
+
+        return response()->json([
+            'status' => '200',
+            'data' => $users,
+        ]);
     }
+
+
 
     public function singel_user_update_profile_data($id)
     {
@@ -440,17 +455,17 @@ public function user()
 
 
     public function logoutUser(Request $request)
-{
-    // Ensure the user is authenticated
-    if (Auth::check()) {
-        // Revoke the current user's token
-        $request->user()->currentAccessToken()->delete();
+    {
+        // Ensure the user is authenticated
+        if (Auth::check()) {
+            // Revoke the current user's token
+            $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['status' => '200', 'message' => 'Successfully logged out']);
-    } else {
-        return response()->json(['status' => '401', 'message' => 'No user authenticated'], 401);
+            return response()->json(['status' => '200', 'message' => 'Successfully logged out']);
+        } else {
+            return response()->json(['status' => '401', 'message' => 'No user authenticated'], 401);
+        }
     }
-}
     // public function delete_user($id)
     // {
 
@@ -529,15 +544,14 @@ public function user()
 
 public function all_user(Request $request)
 {
-    // Get the users with their related data
-    $users = User::with('user_update')->orderBy('id', 'desc')->get(); // Use get() instead of all()
 
-    // Initialize an array to hold the results
+    $users = User::with('user_update')->orderBy('id', 'desc')->get(); // Use get() instead of all()
     $results = [];
 
     foreach ($users as $user) {
-        // Get the personal info based on the user's email
-        $personalInfo = Parsonal::where('email', $user->email)->first();
+
+        $personalInfo = Parsonal::where('email', 'mithilakhan082@gmail.com')->first();
+        // return $personalInfo;
 
         if ($personalInfo) {
             // Get the personal ID
