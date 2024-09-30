@@ -60,23 +60,31 @@ class DocumentControler extends Controller
         ]);
         return response()->json(['status' => 200, 'message' => 'Billing information submitted and email sent successfully.']);
     }
-
-
     public function get_billing()
     {
         $auth_user = Auth::user();
         $billings = Billing::where('user_id', $auth_user->id)->first();
+
         if (!$billings) {
             return response()->json(['message' => 'No billing records found.'], 404);
         }
+        $onboarding_fee_name = basename($billings->onboarding_fee);
+        $ach_payment_name = basename($billings->ach_payment);
+        $vendor_ordering_name = basename($billings->vendor_ordering);
 
-        return response()->json(['status' => 200, 'billings' => $billings], 200);
+        return response()->json([
+            'status' => 200,
+            'billings' => [
+                'onboarding_fee' => $onboarding_fee_name,
+                'ach_payment' => $ach_payment_name,
+                'vendor_ordering' => $vendor_ordering_name,
+            ],
+        ], 200);
     }
+
 
     public function store_document(Request $request)
 {
-
-
     $auth_user = Auth::user();
      $user_id = $auth_user->id;
 
@@ -109,33 +117,16 @@ class DocumentControler extends Controller
         $document->user_id = $user_id;
     }
 
-    // Process the uploaded files
-    // foreach ($files as $file) {
-    //     if ($request->hasFile($file)) {
-    //         $path = $request->file($file)->store('Client_documents', 'public');
-    //         $document->$file = $path;
-    //     }
-    // }
-
     foreach ($files as $file) {
         if ($request->hasFile($file)) {
             $uploadedFile = $request->file($file);
-            $originalName = $uploadedFile->getClientOriginalName(); // Get the original file name
+            $originalName = $uploadedFile->getClientOriginalName(); /
             $path = 'Client_documents/' . $originalName;
-
-            // Store the file using the original name
             $uploadedFile->storeAs('Client_documents', $originalName, 'public');
-
-            // Save the path
             $document->$file = $path;
         }
     }
-
-
-    // Save the document record
     $document->save();
-
-    // Return a success response
     return response()->json(['status' => 200, 'message' => 'Upload document successful', 'data' => $document], 200);
 }
 
@@ -151,42 +142,21 @@ public function update_document(Request $request)
         'ach_fomr',
         'member_ship_contact',
     ];
-
-    // Find the document by ID
     $document = ClientDocument::find($request->id);
     if (!$document) {
         return response()->json(['status' => 400, 'message' => 'Document not found']);
     }
-
-    // Update the document's user ID
     $document->user_id = $user_id;
-
-    // Process file uploads
-    // foreach ($files as $file) {
-    //     if ($request->hasFile($file)) {
-    //         $path = $request->file($file)->store('Client_documents', 'public');
-    //         $document->$file = $path;
-    //     } else {
-    //         return response()->json(['status' => 400, 'message' => "$file upload failed"], 400);
-    //     }
-    // }
     foreach ($files as $file) {
         if ($request->hasFile($file)) {
             $uploadedFile = $request->file($file);
-            $originalName = $uploadedFile->getClientOriginalName(); // Get the original file name
-
-            // Define the storage path with the original file name
+            $originalName = $uploadedFile->getClientOriginalName();
             $path = $uploadedFile->storeAs('Client_documents', $originalName, 'public');
-
-            // Save the path to the database
             $document->$file = $path;
         } else {
             return response()->json(['status' => 400, 'message' => "$file upload failed"], 400);
         }
     }
-
-
-    // Save the updated document
     $document->save();
 
     // Send notification to the user
