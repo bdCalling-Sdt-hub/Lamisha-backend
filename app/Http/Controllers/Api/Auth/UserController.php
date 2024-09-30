@@ -325,8 +325,11 @@ public function user()
 
             $newProfileUpdate->save();
             if ($user->user_type === 'USER') {
-                $admin= User::where('user_type', 'ADMIN')->first();
-                $admin->notify(new ProfileUpdateNotification($newProfileUpdate));
+                $admins = User::whereIn('user_type', ['ADMIN', 'SUPER-ADMIN'])->get();
+
+                foreach ($admins as $admin) {
+                    $admin->notify(new ProfileUpdateNotification($newProfileUpdate));
+                }
             }
 
             return response()->json([
