@@ -21,7 +21,7 @@ class VendorController extends Controller
         }else{
             return response()->json(['status'=>'401', 'message'=>'Data not found']);
         }
-        
+
     }
 
     // Create a new record
@@ -32,7 +32,7 @@ class VendorController extends Controller
     }
 
     // Update an existing record by ID
-   
+
     public function destroy(Request $request, $id)
     {
         $AdminVendor = AdminVendor::find($id);
@@ -56,7 +56,7 @@ class VendorController extends Controller
             'shiping_address'=> $request->input('shiping_address'),
             'item_description'=> $request->input('item_description'),
             'item_number'=> $request->input('item_number'),
-            'price'=> $request->input('price'), 
+            'price'=> $request->input('price'),
             'quantity'=> $request->input('quantity'),
             'vendor'=> $request->input('vendor'),
             'comments'=> $request->input('comments'),
@@ -75,10 +75,10 @@ class VendorController extends Controller
         }else{
             return response()->json(['status'=>'401', 'message'=>'Data not found']);
         }
-        
+
     }
 
-   
+
     public function qaStore(Request $request)
 {
     // Validate the incoming request
@@ -96,14 +96,14 @@ class VendorController extends Controller
     if ($request->hasFile('files')) {
         foreach ($request->file('files') as $file) {
             // Store each file and prepare its path
-            $filePath = $file->store('uploads', 'public'); 
+            $filePath = $file->store('uploads', 'public');
             $filePaths[] = '/storage/' . $filePath;
         }
     }
 
     // Prepare data for insertion or update
     $data = $request->only(['email', 'title', 'description']);
-    $data['file'] = json_encode($filePaths); 
+    $data['file'] = json_encode($filePaths);
 
     // Check if a record with the given email already exists
     $existingRecord = QA::where('email', $request->input('email'))->first();
@@ -116,7 +116,7 @@ class VendorController extends Controller
         foreach ($oldFilePaths as $oldFilePath) {
             // Extract the path relative to the 'public' disk
             $filePath = str_replace('/storage/', '', $oldFilePath);
-            
+
             if (Storage::disk('public')->exists($filePath)) {
                 // Delete the file from the storage
                 Storage::disk('public')->delete($filePath);
@@ -131,13 +131,13 @@ class VendorController extends Controller
     }
 }
 
-    
-    
 
-    
+
+
+
 
     // Update an existing record by ID
-   
+
     public function qaDestroy(Request $request, $id)
     {
         $AdminVendor = QA::find($id);
@@ -155,10 +155,10 @@ class VendorController extends Controller
         if (!$singelQa) {
             return response()->json(['status' => 400, 'message' => 'Record not found']);
         }
-    
+
         // Decode the JSON-encoded file field
         $singelQa->file = json_decode($singelQa->file);
-    
+
         return response()->json(['status' => 200, 'data' => $singelQa]);
     }
 
@@ -171,11 +171,11 @@ class VendorController extends Controller
         if (!$singelQa) {
             return response()->json(['status' => 400, 'message' => 'Record not found']);
         }
-    
+
         // Decode the JSON-encoded file field
         $singelQa->file = json_decode($singelQa->file);
-    
+
         return response()->json(['status' => 200, 'data' => $singelQa]);
     }
-    
+
 }
