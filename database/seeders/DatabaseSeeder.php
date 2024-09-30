@@ -17,6 +17,17 @@ class DatabaseSeeder extends Seeder
     {
 
         User::create([
+            'first_name' => 'Super',
+            'last_name'=> 'Admin',
+            'email' => 'superadmin@gmail.com',
+            'password'=>Hash::make('123456789'),
+            'user_type'=>'SUPER-ADMIN',
+            'status'=> 'active',
+            'verify_email'=> 1,
+            'otp'=> 0,
+
+        ]);
+        User::create([
             'first_name' => 'Admin',
             'last_name'=> 'Lamesha',
             'email' => 'lameshadavis@gmail.com',
