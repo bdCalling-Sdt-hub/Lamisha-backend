@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Confirmation</title>
+    <title>Verify OTP</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -28,22 +28,18 @@
         .header h1 {
             margin: 0;
         }
-        .order-details, .shipping-info, .billing-info, .payment-method {
-            margin-bottom: 20px;
+        .content {
+            text-align: center;
+            margin: 20px 0;
         }
-        .order-details h2, .shipping-info h2, .billing-info h2, .payment-method h2 {
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 5px;
-        }
-        .order-summary {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        .order-summary th, .order-summary td {
+        .otp-code {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+            background-color: #f1f1f1;
             padding: 10px;
-            border: 1px solid #dddddd;
-            text-align: left;
+            display: inline-block;
+            margin-top: 20px;
         }
         .footer {
             text-align: center;
@@ -64,17 +60,15 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>OTP Confirmation</h1>
+            <h1>Verify Your Email</h1>
         </div>
-       <h1>{{$otp}}</h1>
-        
+        <div class="content">
+            <p>Please check your email and enter the secure code below:</p>
+            <div class="otp-code">{{$otp}}</div>
+        </div>
+        <div class="footer">
+            <p>If you didn't request this, please ignore this email.</p>
+        </div>
     </div>
-
-
-    
-    
-   
-    
-
 </body>
 </html>

@@ -27,6 +27,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [UserController::class, 'logoutUser']);
     Route::post('/update-password', [UserController::class, 'updatePassword']);
     Route::post('/profile-update/request', [UserController::class, 'post_update_profile']);
+    Route::put('/profile-image-update', [UserController::class, 'profile_image_update']);
+    Route::delete('/admin-user-delete', [UserController::class, 'adminUserDelete']); // super-admin
 
 });
 
