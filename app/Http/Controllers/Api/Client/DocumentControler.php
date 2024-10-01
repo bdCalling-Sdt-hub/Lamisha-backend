@@ -26,7 +26,7 @@ class DocumentControler extends Controller
         $auth_user = Auth::user();
         $email = $auth_user->email;
         $validator = Validator::make($request->all(), [
-            'onboarding_fee' => 'required|file|mimes:pdf,jpeg,png,jpg|max:5120',
+            'onoarding_fee' => 'required|file|mimes:pdf,jpeg,png,jpg|max:5120',
             'ach_payment' => 'required|file|mimes:pdf,jpeg,png,jpg|max:5120',
             'vendor_ordering' => 'required|file|mimes:pdf,jpeg,png,jpg|max:5120',
         ]);
@@ -34,7 +34,7 @@ class DocumentControler extends Controller
         if ($validator->fails()) {
             return response()->json(['message' => 'Validation Error', 'errors' => $validator->errors()], 422);
         }
-        $onboarding_fee_path = $request->file('onboarding_fee')->store('PaymentHistory', 'public');
+        $onboarding_fee_path = $request->file('onoarding_fee')->store('PaymentHistory', 'public');
         $ach_payment_path = $request->file('ach_payment')->store('PaymentHistory', 'public');
         $vendor_ordering_path = $request->file('vendor_ordering')->store('PaymentHistory', 'public');
 
@@ -43,7 +43,7 @@ class DocumentControler extends Controller
         Billing::updateOrCreate([
             'user_id' => $auth_user->id,
         ], [
-            'onboarding_fee' => $onboarding_fee_path,
+            'onoarding_fee' => $onboarding_fee_path,
             'ach_payment' => $ach_payment_path,
             'vendor_ordering' => $vendor_ordering_path,
         ]);
@@ -95,8 +95,8 @@ class DocumentControler extends Controller
     if ($document) {
         // Unlink existing files
         foreach ($files as $file) {
-            if (isset($document->$file) && \Storage::disk('public')->exists($document->$file)) {
-                \Storage::disk('public')->delete($document->$file);
+            if (isset($document->$file) && Storage::disk('public')->exists($document->$file)) {
+                Storage::disk('public')->delete($document->$file);
             }
         }
     } else {
@@ -108,7 +108,7 @@ class DocumentControler extends Controller
     foreach ($files as $file) {
         if ($request->hasFile($file)) {
             $uploadedFile = $request->file($file);
-            $originalName = $uploadedFile->getClientOriginalName(); /
+            $originalName = $uploadedFile->getClientOriginalName();
             $path = 'Client_documents/' . $originalName;
             $uploadedFile->storeAs('Client_documents', $originalName, 'public');
             $document->$file = $path;
