@@ -17,33 +17,47 @@ use App\Models\User;
 use App\Notifications\IntakInfoNotification;
 class IntekInformationController extends Controller
 {
-    public function parsonal_info(ParsonalRequest $request)
+    public function parsonal_info(Request $request)
     {
-        $validated = $request->validated();
-         $existing_user = DB::table('parsonals')->where('email', $validated['email'])->first();
-         if (isset($validated['state_license_certificate']) && is_array($validated['state_license_certificate'])) {
+        $email = $request->email;
+        $valiteUser = Parsonal::where('email', $email)->first();
+        $validated = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'dob' => 'required|date',
+            'email' => 'required|email|unique:parsonals,email,' . optional($valiteUser)->id, 
+            'phone' => 'required|string|max:20',
+            'occupation' => 'required|string|max:255',
+            'state_license_certificate' => 'required|string|max:500', // Updated string type and max length
+            'license_certificate_no' => 'required|string|max:255',
+            'completed_training_certificate_service' => 'required|string|max:255',
+            'mailing_address' => 'required|string|max:500',
+        ]);
+
+        // Handle state_license_certificate as JSON if it's an array
+        if (isset($validated['state_license_certificate']) && is_array($validated['state_license_certificate'])) {
             $validated['state_license_certificate'] = json_encode($validated['state_license_certificate']);
         }
-        if ($existing_user) {
-            return response()->json(['status' => 409, 'message' => 'We already have a intake on file with this email please contact us at info@findamd4me.com', 'data' => $existing_user], 409);
+
+        // Update or create a new entry based on the email
+        $parsonal = Parsonal::updateOrCreate(
+            ['email' => $validated['email']], // Condition: find by email
+            $validated // Update with all validated data
+        );
+
+        // If the entry was successfully created/updated
+        if ($parsonal) {
+            // Send notification after creation or update
+            $parsonal->notify(new IntakInfoNotification('Intake Information', $parsonal));
+
+            // Respond with success message and data
+            return response()->json(['status' => 200, 'message' => 'Data inserted/updated successfully', 'data' => $parsonal], 201);
         } else {
-            $inserted_id = DB::table('parsonals')->insertGetId($validated);
-
-            if ($inserted_id) {
-                $new_data = DB::table('parsonals')->where('id', $inserted_id)->first();
-
-                // Send notification
-                $parsonal = Parsonal::find($inserted_id);
-                if ($parsonal) {
-                    $parsonal->notify(new IntakInfoNotification('Intake Information', $new_data));
-                }
-
-                return response()->json(['status' => 200, 'message' => 'Data inserted successfully', 'data' => $new_data], 201);
-            } else {
-                return response()->json(['status' => 500, 'message' => 'Data insertion failed'], 500);
-            }
+            // If something went wrong during insertion/update
+            return response()->json(['status' => 500, 'message' => 'Data insertion failed'], 500);
         }
     }
+
 
 
     public function buisness_info(BuisnessRequest $request)

@@ -21,11 +21,12 @@ class ParsonalRequest extends FormRequest
      */
     public function rules(): array
     {
+
         return [
             'first_name' => 'required',
             'last_name' => 'required',
             'dob' => 'required',
-            'email' => 'required',
+            'email' => 'required|email|unique:parsonals,email',
             'phone' => 'required|',
             'occupation' => 'required',
             'state_license_certificate' => 'required',
