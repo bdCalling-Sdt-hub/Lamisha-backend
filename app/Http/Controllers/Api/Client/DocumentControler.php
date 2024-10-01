@@ -15,10 +15,12 @@ use App\Models\User;
 
 use App\Notifications\DocumentNotification;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class DocumentControler extends Controller
 {
+
     public function billing(Request $request)
     {
         $admin_mail = 'info@FindaMD4Me.com';
@@ -40,7 +42,7 @@ class DocumentControler extends Controller
         $onboarding_fee_path = null;
         if ($request->hasFile('onoarding_fee')) {
             $onboarding_fee_path = $request->file('onoarding_fee')->storeAs(
-                'PaymentHistory', $request->file('onboarding_fee')->getClientOriginalName(), 'public'
+                '', $request->file('onoarding_fee')->getClientOriginalName(), 'public'
             );
         } else {
             return response()->json(['status' => 400, 'message' => 'Onboarding fee upload failed'], 400);
@@ -49,7 +51,7 @@ class DocumentControler extends Controller
         $ach_payment_path = null;
         if ($request->hasFile('ach_payment')) {
             $ach_payment_path = $request->file('ach_payment')->storeAs(
-                'PaymentHistory', $request->file('ach_payment')->getClientOriginalName(), 'public'
+                '', $request->file('ach_payment')->getClientOriginalName(), 'public'
             );
         } else {
             return response()->json(['status' => 400, 'message' => 'ACH payment upload failed'], 400);
@@ -58,7 +60,7 @@ class DocumentControler extends Controller
         $vendor_ordering_path = null;
         if ($request->hasFile('vendor_ordering')) {
             $vendor_ordering_path = $request->file('vendor_ordering')->storeAs(
-                'PaymentHistory', $request->file('vendor_ordering')->getClientOriginalName(), 'public'
+                '', $request->file('vendor_ordering')->getClientOriginalName(), 'public'
             );
         } else {
             return response()->json(['status' => 400, 'message' => 'Vendor ordering upload failed'], 400);
@@ -68,9 +70,10 @@ class DocumentControler extends Controller
         Mail::to($admin_mail)->send(new BillingMail($email, $onboarding_fee_path, $ach_payment_path, $vendor_ordering_path));
 
         // Store the file paths in the database
-        Billing::create([
+        Billing::updateOrCreate([
             'user_id' => $auth_user->id,
-            'onboarding_fee' => $onboarding_fee_path,
+        ], [
+            'onoarding_fee' => $onboarding_fee_path,
             'ach_payment' => $ach_payment_path,
             'vendor_ordering' => $vendor_ordering_path,
         ]);
@@ -81,7 +84,7 @@ class DocumentControler extends Controller
     public function get_billing()
     {
         $auth_user = Auth::user();
-        $billings = Billing::where('user_id', $auth_user->id)->get();
+        $billings = Billing::where('user_id', $auth_user->id)->first();
 
         if (!$billings) {
             return response()->json(['message' => 'No billing records found.'], 404);
@@ -99,54 +102,52 @@ class DocumentControler extends Controller
     }
 
 
-
     public function store_document(Request $request)
-{
-    $auth_user = Auth::user();
-     $user_id = $auth_user->id;
+    {
+        $auth_user = Auth::user();
+        $user_id = $auth_user->id;
 
-    // Define the list of files
-    $files = [
-        'resume',
-        'license_certification',
-        'libability_insurnce',
-        'buisness_formations_doc',
-        'enform',
-        'currrent_driver_license',
-        'current_cpr_certification',
-        'blood_bron_pathogen_certificaton',
-        'training_hipaa_osha',
-    ];
+        // Define the list of files
+        $files = [
+            'resume',
+            'license_certification',
+            'libability_insurnce',
+            'buisness_formations_doc',
+            'enform',
+            'currrent_driver_license',
+            'current_cpr_certification',
+            'blood_bron_pathogen_certificaton',
+            'training_hipaa_osha',
+        ];
 
-    // Check if the document already exists for the user
-    $document = ClientDocument::where('user_id', $user_id)->first();
+        // Check if the document already exists for the user
+        $document = ClientDocument::where('user_id', $user_id)->first();
 
-    if ($document) {
-        // Unlink existing files
+        if ($document) {
+            // Unlink existing files
+            foreach ($files as $file) {
+                if (isset($document->$file) && Storage::disk('public')->exists($document->$file)) {
+                    Storage::disk('public')->delete($document->$file);
+                }
+            }
+        } else {
+            // Create a new document record if it doesn't exist
+            $document = new ClientDocument();
+            $document->user_id = $user_id;
+        }
+
         foreach ($files as $file) {
-            if (isset($document->$file) && Storage::disk('public')->exists($document->$file)) {
-                Storage::disk('public')->delete($document->$file);
+            if ($request->hasFile($file)) {
+                $uploadedFile = $request->file($file);
+                $originalName = $uploadedFile->getClientOriginalName();
+                $path = 'Client_documents/' . $originalName;
+                $uploadedFile->storeAs('Client_documents', $originalName, 'public');
+                $document->$file = $path;
             }
         }
-    } else {
-        // Create a new document record if it doesn't exist
-        $document = new ClientDocument();
-        $document->user_id = $user_id;
+        $document->save();
+        return response()->json(['status' => 200, 'message' => 'Upload document successful', 'data' => $document], 200);
     }
-
-    foreach ($files as $file) {
-        if ($request->hasFile($file)) {
-            $uploadedFile = $request->file($file);
-            $originalName = $uploadedFile->getClientOriginalName();
-            $path = 'Client_documents/' . $originalName;
-            $uploadedFile->storeAs('Client_documents', $originalName, 'public');
-            $document->$file = $path;
-        }
-    }
-    $document->save();
-    return response()->json(['status' => 200, 'message' => 'Upload document successful', 'data' => $document], 200);
-}
-
 
 public function update_document(Request $request)
 {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Confirmation</title>
+    <title>Custom Tier Request</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -67,7 +67,7 @@
             <h1>Custom Tier Message</h1>
         </div>
         <p>Email: {{ $email }}</p>
-        <p>Trial Name: {{ $trial }}</p>
+        <p>Tier Information: {{ $trial }}</p>
 
     </div>
 

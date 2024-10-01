@@ -30,7 +30,7 @@ class userCredinsial extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'User Credinsial',
+            subject: 'User Login Credentials',
         );
     }
 

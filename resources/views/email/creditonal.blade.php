@@ -28,22 +28,9 @@
         .header h1 {
             margin: 0;
         }
-        .order-details, .shipping-info, .billing-info, .payment-method {
-            margin-bottom: 20px;
-        }
-        .order-details h2, .shipping-info h2, .billing-info h2, .payment-method h2 {
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 5px;
-        }
-        .order-summary {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        .order-summary th, .order-summary td {
-            padding: 10px;
-            border: 1px solid #dddddd;
-            text-align: left;
+        p {
+            font-size: 16px;
+            color: #333;
         }
         .footer {
             text-align: center;
@@ -63,19 +50,13 @@
 </head>
 <body>
     <div class="container">
-        <div class="header ">
-            <h1>Your login credinsial</h1>
+        <div class="header">
+            <h1>Your Login Credentials</h1>
         </div>
         <p>Email: {{ $email }}</p>
         <p>Password: {{ $password }}</p>
-        
+
+        <p> Please login and change your password</p>
     </div>
-
-
-    
-    
-   
-    
-
 </body>
 </html>
