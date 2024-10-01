@@ -314,17 +314,8 @@ public function user()
     public function post_update_profile(Request $request)
     {
         $user = Auth::user();
-
         if ($user) {
-            // Check if there is an existing update request for this user
             $existingRequest = UpdateProfile::where('user_id', $user->id)->first();
-
-            // Handle existing request and image
-            if ($existingRequest) {
-                $this->deleteExistingImage($existingRequest->image);
-                $existingRequest->delete();
-            }
-
             $newProfileUpdate = new UpdateProfile();
             $newProfileUpdate->user_id = $user->id;
             $newProfileUpdate->first_name = $request->first_name ?: $user->first_name;
@@ -333,14 +324,6 @@ public function user()
             $newProfileUpdate->phone = $request->phone ?: $user->phone;
             $newProfileUpdate->buisness_address = $request->buisness_address ?: $user->buisness_address;
             $newProfileUpdate->buisness_name = $request->buisnes_name ?: $user->buisness_name;
-
-            // Handle image file
-            if ($request->hasFile('image')) {
-                $newProfileUpdate->image = $this->uploadImage($request->file('image'), 'profile_images');
-            } else {
-                $newProfileUpdate->image = $existingRequest ? $existingRequest->image : null;
-            }
-
             $newProfileUpdate->save();
 
             // Notify admins if user type is USER
@@ -350,56 +333,46 @@ public function user()
                     $admin->notify(new ProfileUpdateNotification($newProfileUpdate));
                 }
             }
-
             return response()->json([
                 'status' => 200,
                 'message' => "Profile updated successfully, waiting for admin approval.",
                 'data' => $newProfileUpdate,
             ]);
         }
-
         return response()->json(["message" => "You are not authorized!"], 401);
     }
-
     public function profile_image_update(Request $request)
     {
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $auth_user = Auth::user();
 
-        // Delete old image if exists
-        if ($auth_user->profile_image) {
-            $this->deleteExistingImage($auth_user->profile_image);
+        if ($auth_user->image) {
+            $this->deleteExistingImage($auth_user->image);
         }
-
-        // Handle file upload
-        if ($request->hasFile('profile_image')) {
-            $auth_user->profile_image = $this->uploadImage($request->file('profile_image'), 'profile_images');
+        if ($request->hasFile('image')) {
+            $auth_user->image = $this->uploadImage($request->file('image'), 'profile_images');
             $auth_user->save();
         }
 
         return response()->json([
             'status' => 200,
             'message' => 'Profile image updated successfully',
-            'profile_image' => asset($auth_user->profile_image),
+            'profile_image' => asset('storage/' . $auth_user->image),
         ]);
     }
-
-    // Helper function to delete existing image
     private function deleteExistingImage($imagePath)
     {
         if ($imagePath && Storage::disk('public')->exists($imagePath)) {
             Storage::disk('public')->delete($imagePath);
         }
     }
-
-    // Helper function to upload an image
     private function uploadImage($file, $directory)
     {
         $filename = time() . '_' . $file->getClientOriginalName();
-        $file->storeAs('public/' . $directory, $filename);
+        $file->storeAs('public/' . $directory, $filename); 
         return $directory . '/' . $filename;
     }
 
