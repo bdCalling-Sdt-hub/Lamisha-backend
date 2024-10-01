@@ -25,7 +25,7 @@ class IntekInformationController extends Controller
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'dob' => 'required|date',
-            'email' => 'required|email|unique:parsonals,email,' . optional($valiteUser)->id, 
+            'email' => 'required|email|unique:parsonals,email,' . optional($valiteUser)->id,
             'phone' => 'required|string|max:20',
             'occupation' => 'required|string|max:255',
             'state_license_certificate' => 'required|string|max:500', // Updated string type and max length
@@ -39,7 +39,6 @@ class IntekInformationController extends Controller
             $validated['state_license_certificate'] = json_encode($validated['state_license_certificate']);
         }
 
-        // Update or create a new entry based on the email
         $parsonal = Parsonal::updateOrCreate(
             ['email' => $validated['email']], // Condition: find by email
             $validated // Update with all validated data
