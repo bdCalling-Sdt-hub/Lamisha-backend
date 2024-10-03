@@ -42,7 +42,7 @@ class DocumentControler extends Controller
         $onboarding_fee_path = null;
         if ($request->hasFile('onoarding_fee')) {
             $onboarding_fee_path = $request->file('onoarding_fee')->storeAs(
-                '', $request->file('onoarding_fee')->getClientOriginalName(), 'public'
+                'Billings', $request->file('onoarding_fee')->getClientOriginalName(), 'public'
             );
         } else {
             return response()->json(['status' => 400, 'message' => 'Onboarding fee upload failed'], 400);
@@ -51,7 +51,7 @@ class DocumentControler extends Controller
         $ach_payment_path = null;
         if ($request->hasFile('ach_payment')) {
             $ach_payment_path = $request->file('ach_payment')->storeAs(
-                '', $request->file('ach_payment')->getClientOriginalName(), 'public'
+                'Billings', $request->file('ach_payment')->getClientOriginalName(), 'public'
             );
         } else {
             return response()->json(['status' => 400, 'message' => 'ACH payment upload failed'], 400);
@@ -60,7 +60,7 @@ class DocumentControler extends Controller
         $vendor_ordering_path = null;
         if ($request->hasFile('vendor_ordering')) {
             $vendor_ordering_path = $request->file('vendor_ordering')->storeAs(
-                '', $request->file('vendor_ordering')->getClientOriginalName(), 'public'
+                'Billings', $request->file('vendor_ordering')->getClientOriginalName(), 'public'
             );
         } else {
             return response()->json(['status' => 400, 'message' => 'Vendor ordering upload failed'], 400);
@@ -80,7 +80,6 @@ class DocumentControler extends Controller
 
         return response()->json(['status' => 200, 'message' => 'Billing information submitted and email sent successfully.']);
     }
-
     public function get_billing()
     {
         $auth_user = Auth::user();
@@ -89,18 +88,25 @@ class DocumentControler extends Controller
         if (!$billings) {
             return response()->json(['message' => 'No billing records found.'], 404);
         }
-
-        // Return only the file names, not full paths
         return response()->json([
             'status' => 200,
             'billings' => [
-                'onoarding_fee' => basename($billings->onoarding_fee),
-                'ach_payment' => basename($billings->ach_payment),
-                'vendor_ordering' => basename($billings->vendor_ordering),
+                [
+                    'onoarding_fee' => Storage::url($billings->onoarding_fee),
+                    'file_name'=>basename($billings->onoarding_fee),
+                ],
+                [
+                    'ach_payment' => Storage::url($billings->ach_payment),
+                    'file_name' => basename($billings->ach_payment),
+                ],
+                [
+                    'vendor_ordering' => Storage::url($billings->vendor_ordering),
+                    'file_name'=> basename($billings->vendor_ordering),
+
+                ]
             ],
         ], 200);
     }
-
 
     public function store_document(Request $request)
     {
