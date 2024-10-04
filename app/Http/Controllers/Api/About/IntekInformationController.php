@@ -6,54 +6,62 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\AppointmentRequest;
 use App\Http\Requests\BuisnessRequest;
-use App\Http\Requests\ParsonalRequest;
 use App\Models\Parsonal;
 use App\Models\Appoinment;
-use App\Models\BuisnessInfo;
 use DB;
 use App\Mail\PersonalInfoMail;
+use Illuminate\Support\Facades\Validator;
 use Mail;
-use App\Models\User;
 use App\Notifications\IntakInfoNotification;
 class IntekInformationController extends Controller
 {
     public function parsonal_info(Request $request)
     {
-        $email = $request->email;
-        $valiteUser = Parsonal::where('email', $email)->first();
-        $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'dob' => 'required',
-            'email' => 'required|email|unique:parsonals,email,' . optional($valiteUser)->id,
-            'phone' => 'required|string|max:20',
-            'occupation' => 'required|string|max:255',
-            'state_license_certificate' => 'required|string|max:500', // Updated string type and max length
-            'license_certificate_no' => 'required|string|max:255',
-            'completed_training_certificate_service' => 'required|string|max:255',
-            'mailing_address' => 'required|string|max:500',
-        ]);
+        try {
+            $email = $request->email;
+            $valiteUser = Parsonal::where('email', $email)->first();
+            $validated = Validator::make($request->all(), [
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'dob' => 'required',
+                'email' => 'required|email|unique:parsonals,email,' . optional($valiteUser)->id,
+                'phone' => 'required|string|max:20',
+                'occupation' => 'required|string|max:255',
+                'state_license_certificate' => 'required|array',
+                'state_license_certificate.*' => 'string|max:500',
+                'license_certificate_no' => 'required|string|max:255',
+                'completed_training_certificate_service' => 'required|string|max:255',
+                'mailing_address' => 'required|string|max:500',
+            ]);
 
-        // Handle state_license_certificate as JSON if it's an array
-        if (isset($validated['state_license_certificate']) && is_array($validated['state_license_certificate'])) {
-            $validated['state_license_certificate'] = json_encode($validated['state_license_certificate']);
-        }
+            if ($validated->fails()) {
+                return $this->sendError('Validation Error.', $validated->errors(), 422);
+            }
+            $validatedData = $validated->validated();
+            if (isset($validatedData['state_license_certificate']) && is_array($validatedData['state_license_certificate'])) {
+                $validatedData['state_license_certificate'] = json_encode($validatedData['state_license_certificate']);
+            }
+            $parsonal = Parsonal::updateOrCreate(
+                ['email' => $validatedData['email']],
+                $validatedData
+            );
 
-        $parsonal = Parsonal::updateOrCreate(
-            ['email' => $validated['email']], // Condition: find by email
-            $validated // Update with all validated data
-        );
+            if ($parsonal) {
+                $parsonal->notify(new IntakInfoNotification('Intake Information', $parsonal));
+                $parsonal->state_license_certificate = json_decode($parsonal->state_license_certificate, true);
 
-        // If the entry was successfully created/updated
-        if ($parsonal) {
-            // Send notification after creation or update
-            $parsonal->notify(new IntakInfoNotification('Intake Information', $parsonal));
-
-            // Respond with success message and data
-            return response()->json(['status' => 200, 'message' => 'Data inserted/updated successfully', 'data' => $parsonal], 201);
-        } else {
-            // If something went wrong during insertion/update
-            return response()->json(['status' => 500, 'message' => 'Data insertion failed'], 500);
+                return response()->json([
+                    'status' => 201,
+                    'message' => 'Data inserted/updated successfully',
+                    'data' => $parsonal
+                ], 201);
+            } else {
+                return response()->json(['status' => 500, 'message' => 'Data insertion failed'], 500);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                "error" => $e->getMessage(),
+            ], 501);
         }
     }
 
@@ -86,7 +94,6 @@ class IntekInformationController extends Controller
             }
         }
     }
-
 
     public function appointment_info(AppointmentRequest $request)
     {
