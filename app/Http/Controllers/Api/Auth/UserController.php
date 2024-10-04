@@ -25,9 +25,38 @@ use App\Models\Notification;
 use App\Notifications\ProfileUpdateNotification;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
 
 class UserController extends Controller
 {
+
+    public function adminUserDelete(Request $request)
+    {
+        $auth_user = Auth::user();
+
+        // Check if the authenticated user is a SUPER-ADMIN
+        if ($auth_user->user_type !== 'SUPER-ADMIN') {
+            return response()->json(['status' => 403, 'message' => 'Unauthorized action.'], 403);
+        }
+
+        // Validate the request to ensure 'user_id' is provided
+        $request->validate([
+            'user_id' => 'required|integer|exists:users,id', // Check if user_id is provided and exists
+        ]);
+        // Find the user to delete
+        $userToDelete = User::where('id', $request->user_id)
+            ->whereIn('user_type', ['ADMIN', 'USER'])
+            ->first();
+
+        // Check if the user exists and can be deleted
+        if ($userToDelete) {
+            $userToDelete->delete();
+            return response()->json(['status' => 200, 'message' => 'User deleted successfully.'], 200);
+        } else {
+            return response()->json(['status' => 404, 'message' => 'User not found or cannot be deleted.'], 404);
+        }
+    }
+
 
     public function register(Request $request)
     {
@@ -210,6 +239,7 @@ public function user()
         return response()->json([
             'status' => 200,
             'user' => $user,
+            'personalInfo' =>$IntackInfo,
             'BisnessInfo' => $buisnessData,
             'Tier' => $tierData,
             'notification'=> $totalNotification
@@ -285,21 +315,7 @@ public function user()
     {
         $user = Auth::user();
         if ($user) {
-            // Check if there is an existing update request for this user
             $existingRequest = UpdateProfile::where('user_id', $user->id)->first();
-
-            if ($existingRequest) {
-                // Delete the existing image file if it exists
-                if ($existingRequest->image) {
-                    $existingImagePath = public_path($existingRequest->image);
-                    if (File::exists($existingImagePath)) {
-                        File::delete($existingImagePath);
-                    }
-                }
-                // Delete the existing update request record
-                $existingRequest->delete();
-            }
-
             $newProfileUpdate = new UpdateProfile();
             $newProfileUpdate->user_id = $user->id;
             $newProfileUpdate->first_name = $request->first_name ?: $user->first_name;
@@ -308,44 +324,57 @@ public function user()
             $newProfileUpdate->phone = $request->phone ?: $user->phone;
             $newProfileUpdate->buisness_address = $request->buisness_address ?: $user->buisness_address;
             $newProfileUpdate->buisness_name = $request->buisnes_name ?: $user->buisness_name;
-
-            // Handle image file
-            if ($request->hasFile('image')) {
-                $file = $request->file('image');
-                $timeStamp = time(); // Current timestamp
-                $fileName = $timeStamp . '.' . $file->getClientOriginalExtension();
-                $file->storeAs('public/image', $fileName);
-
-                $fileUrl = '/storage/image/' . $fileName;
-                $newProfileUpdate->image = $fileUrl;
-            } else {
-                // If no image was uploaded, set image to null or empty string
-                $newProfileUpdate->image = $existingRequest ? $existingRequest->image : null;
-            }
-
             $newProfileUpdate->save();
+
+            // Notify admins if user type is USER
             if ($user->user_type === 'USER') {
                 $admins = User::whereIn('user_type', ['ADMIN', 'SUPER-ADMIN'])->get();
-
                 foreach ($admins as $admin) {
                     $admin->notify(new ProfileUpdateNotification($newProfileUpdate));
                 }
             }
-
             return response()->json([
                 'status' => 200,
                 'message' => "Profile updated successfully, waiting for admin approval.",
                 'data' => $newProfileUpdate,
             ]);
-        } else {
-            return response()->json([
-                "message" => "You are not authorized!"
-            ], 401);
+        }
+        return response()->json(["message" => "You are not authorized!"], 401);
+    }
+    public function profile_image_update(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $auth_user = Auth::user();
+
+        if ($auth_user->image) {
+            $this->deleteExistingImage($auth_user->image);
+        }
+        if ($request->hasFile('image')) {
+            $auth_user->image = $this->uploadImage($request->file('image'), 'profile_images');
+            $auth_user->save();
+        }
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Profile image updated successfully',
+            'profile_image' => asset('storage/' . $auth_user->image),
+        ]);
+    }
+    private function deleteExistingImage($imagePath)
+    {
+        if ($imagePath && Storage::disk('public')->exists($imagePath)) {
+            Storage::disk('public')->delete($imagePath);
         }
     }
-
-
-
+    private function uploadImage($file, $directory)
+    {
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $file->storeAs('public/' . $directory, $filename);
+        return $directory . '/' . $filename;
+    }
 
     public function update_profile_all_user()
     {

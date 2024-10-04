@@ -9,7 +9,7 @@ class Parsonal extends Model
 {
     use HasFactory, Notifiable;
     protected $fillable = [
-        'first_nam',
+        'first_name',
         'last_name',
         'dob',
         'email',
