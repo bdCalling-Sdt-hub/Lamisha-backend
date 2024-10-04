@@ -24,7 +24,7 @@ class IntekInformationController extends Controller
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'dob' => 'required|date',
+            'dob' => 'required',
             'email' => 'required|email|unique:parsonals,email,' . optional($valiteUser)->id,
             'phone' => 'required|string|max:20',
             'occupation' => 'required|string|max:255',
