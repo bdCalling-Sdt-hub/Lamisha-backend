@@ -372,7 +372,7 @@ public function user()
     private function uploadImage($file, $directory)
     {
         $filename = time() . '_' . $file->getClientOriginalName();
-        $file->storeAs('public/' . $directory, $filename); 
+        $file->storeAs('public/' . $directory, $filename);
         return $directory . '/' . $filename;
     }
 
