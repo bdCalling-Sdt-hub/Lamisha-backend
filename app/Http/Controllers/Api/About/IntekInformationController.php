@@ -49,8 +49,6 @@ class IntekInformationController extends Controller
         }
     }
 
-
-
     public function buisness_info(BuisnessRequest $request)
     {
        $what_state_anicipate_service= array($request->what_state_anicipate_service);

@@ -582,7 +582,7 @@ public function all_user(Request $request)
 
     foreach ($users as $user) {
 
-        $personalInfo = Parsonal::where('email', 'mithilakhan082@gmail.com')->first();
+        $personalInfo = Parsonal::where('email', $user->email)->first();
         // return $personalInfo;
 
         if ($personalInfo) {
