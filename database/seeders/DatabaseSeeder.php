@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
             'last_name'=> 'Admin',
             'email' => 'superadmin@gmail.com',
             'password'=>Hash::make('123456789'),
-            'user_type'=>'SUPER-ADMIN',
+            'user_type'=>'SUPER ADMIN',
             'status'=> 'active',
             'verify_email'=> 1,
             'otp'=> 0,
