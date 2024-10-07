@@ -375,6 +375,25 @@ public function user()
         $file->storeAs('public/' . $directory, $filename);
         return $directory . '/' . $filename;
     }
+    public function profile_image_get()
+    {
+        $auth_user = Auth::user();
+
+        // Check if the user has an image
+        if ($auth_user->image) {
+            $image_url = asset('storage/' . $auth_user->image); // Construct the image URL
+        } else {
+            $image_url = asset('images/default-profile.png'); // Use a default image if no profile image is set
+        }
+
+        // Return the image URL in the response
+        return response()->json([
+            'status' => 200,
+            'message' => 'Profile image retrieved successfully',
+            'profile_image' => $image_url,
+        ]);
+    }
+
 
     public function update_profile_all_user()
     {
