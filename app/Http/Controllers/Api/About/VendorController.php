@@ -15,7 +15,7 @@ class VendorController extends Controller
 {
     public function AdminVendor_index()
     {
-        $AdminVendor = AdminVendor::all();
+        $AdminVendor = AdminVendor::orderBy("name","asc")->get();
         if ($AdminVendor) {
             return response()->json(['status'=>'200', 'data'=>$AdminVendor]);
         }else{
