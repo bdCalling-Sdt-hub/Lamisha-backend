@@ -19,7 +19,7 @@ class AdminUserMiddleWare
         try {
             $user = Auth::user();
 
-            if ($user->user_type == 'ADMIN' || $user->user_type == 'USER') {
+            if ($user->user_type == 'ADMIN' || $user->user_type == 'USER' || $user->user_type == 'SUPER ADMIN') {
                 return $next($request);
             }
 
@@ -32,6 +32,6 @@ class AdminUserMiddleWare
                 'message' => 'Unauthorized: ' . $exception->getMessage()
             ], 401);
         }
-      
+
     }
 }
