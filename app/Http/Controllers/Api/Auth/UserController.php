@@ -381,9 +381,9 @@ public function user()
 
         // Check if the user has an image
         if ($auth_user->image) {
-            $image_url = asset('storage/' . $auth_user->image); // Construct the image URL
+            $image_url = ('storage/' . $auth_user->image); // Construct the image URL
         } else {
-            $image_url = asset('images/default-profile.png'); // Use a default image if no profile image is set
+            $image_url = ('images/default-profile.png'); // Use a default image if no profile image is set
         }
 
         // Return the image URL in the response
@@ -663,6 +663,7 @@ public function all_user(Request $request)
 
     public function updatClientType(Request $request, $id)
     {
+
         $updateClient = BuisnessInfo::find($id);
         $updateClient->client_type = $request->client_type;
         $updateClient->tier_service_interrested = $request->tier_service_interrested;
