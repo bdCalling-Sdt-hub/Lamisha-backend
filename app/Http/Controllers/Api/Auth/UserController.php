@@ -155,7 +155,7 @@ class UserController extends Controller
             Mail::to($request->email)->send(new SendOtp($random));
             $user->update(['otp' => $random]);
             $user->update(['verify_email' => 0]);
-            return response()->json(['status'=>200, 'message' => 'Please check your email for get the OTP']);
+            return response()->json(['status'=>200, 'message' => 'Please check your email we sent you a code.']);
         }
     }
 
@@ -185,24 +185,6 @@ class UserController extends Controller
         }
     }
 
-    // public function loginUser(Request $request)
-    // {
-    //     $credentials = $request->only('email', 'password');
-
-    //     if (Auth::attempt($credentials)) {
-    //         $user = Auth::user();
-
-    //         // Check if the user account is active
-    //         if ($user->status === 'active') {
-    //             $token = $user->createToken('example')->accessToken;
-    //             return response()->json(['status' => 200, 'token' => $token, 'data' => $user]);
-    //         } else {
-    //             return response()->json(['status' => 403, 'message' => 'Your account is deactivated'], 403);
-    //         }
-    //     } else {
-    //         return response()->json(['status' => 401, 'message' => 'Unauthorized'], 401);
-    //     }
-    // }
 
     public function loginUser(Request $request)
     {
@@ -221,9 +203,6 @@ class UserController extends Controller
         return response()->json(['status' => 401, 'message' => 'Unauthorized'], 401);
     }
 }
-
-
-
 public function user()
 {
     $totalNotification = Notification::where('read_at', null)->count();
