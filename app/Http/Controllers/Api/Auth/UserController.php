@@ -257,37 +257,23 @@ public function user()
     public function resendOtp(Request $request)
     {
         $user = User::where('email', $request->email)
-            //            ->where('verify_email', 0)
             ->first();
 
         if (!$user) {
             return response()->json(['message' => 'User not found or email already verified'], 404);
         }
-
-        // Check if OTP resend is allowed (based on time expiration)
         $currentTime = now();
-        $lastResentAt = $user->last_otp_sent_at; // Assuming you have a column in your users table to track the last OTP sent time
-
-        // Define your expiration time (e.g., 5 minutes)
-        $expirationTime = 5; // in minutes
-
+        $lastResentAt = $user->last_otp_sent_at;
+        $expirationTime = 5;
         if ($lastResentAt && $lastResentAt->addMinutes($expirationTime)->isFuture()) {
-            // Resend not allowed yet
             return response()->json(['message' => 'You can only resend OTP once every ' . $expirationTime . ' minutes'], 400);
         }
-
-        // Generate new OTP
         $newOtp = Str::random(6);
         Mail::to($user->email)->send(new SendOtp($newOtp));
-
-        // Update user data
         $user->update(['otp' => $newOtp]);
         $user->update(['last_otp_sent_at' => $currentTime]);
-
         return response()->json(['message' => 'OTP resent successfully']);
     }
-
-    // Only user know update profile but basically behan the seen insert data update profile table then admin update date user profile
     public function post_update_profile(Request $request)
     {
         $user = Auth::user();
