@@ -19,7 +19,6 @@ class IntekInformationController extends Controller
 {
     public function parsonal_info(Request $request)
     {
-        // return $request;
         $email = $request->email;
         $valiteUser = Parsonal::where('email', $email)->first();
         $validated = $request->validate([
@@ -79,7 +78,6 @@ class IntekInformationController extends Controller
             }
         }
     }
-
 
     public function appointment_info(AppointmentRequest $request)
     {
