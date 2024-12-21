@@ -155,7 +155,7 @@ class UserController extends Controller
             Mail::to($request->email)->send(new SendOtp($random));
             $user->update(['otp' => $random]);
             $user->update(['verify_email' => 0]);
-            return response()->json(['status'=>200, 'message' => 'Please check your email for get the OTP']);
+            return response()->json(['status'=>200, 'message' => 'Please check your email we sent you a code.']);
         }
     }
 
@@ -184,26 +184,6 @@ class UserController extends Controller
             return response()->json(['status'=>200,'message' => 'Password reset successfully','data'=> $user], 200);
         }
     }
-
-    // public function loginUser(Request $request)
-    // {
-    //     $credentials = $request->only('email', 'password');
-
-    //     if (Auth::attempt($credentials)) {
-    //         $user = Auth::user();
-
-    //         // Check if the user account is active
-    //         if ($user->status === 'active') {
-    //             $token = $user->createToken('example')->accessToken;
-    //             return response()->json(['status' => 200, 'token' => $token, 'data' => $user]);
-    //         } else {
-    //             return response()->json(['status' => 403, 'message' => 'Your account is deactivated'], 403);
-    //         }
-    //     } else {
-    //         return response()->json(['status' => 401, 'message' => 'Unauthorized'], 401);
-    //     }
-    // }
-
     public function loginUser(Request $request)
     {
     $credentials = $request->only('email', 'password');
@@ -221,9 +201,6 @@ class UserController extends Controller
         return response()->json(['status' => 401, 'message' => 'Unauthorized'], 401);
     }
 }
-
-
-
 public function user()
 {
     $totalNotification = Notification::where('read_at', null)->count();
@@ -381,9 +358,9 @@ public function user()
 
         // Check if the user has an image
         if ($auth_user->image) {
-            $image_url = asset('storage/' . $auth_user->image); // Construct the image URL
+            $image_url = ('storage/' . $auth_user->image); // Construct the image URL
         } else {
-            $image_url = asset('images/default-profile.png'); // Use a default image if no profile image is set
+            $image_url = ('images/default-profile.png'); // Use a default image if no profile image is set
         }
 
         // Return the image URL in the response
@@ -663,6 +640,7 @@ public function all_user(Request $request)
 
     public function updatClientType(Request $request, $id)
     {
+
         $updateClient = BuisnessInfo::find($id);
         $updateClient->client_type = $request->client_type;
         $updateClient->tier_service_interrested = $request->tier_service_interrested;

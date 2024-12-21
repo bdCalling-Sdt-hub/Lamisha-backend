@@ -58,6 +58,8 @@ class IntekInformationController extends Controller
         }
         elseif (isset($validated['what_state_anicipate_service']) && is_array($validated['what_state_anicipate_service'])) {
             $validated['what_state_anicipate_service'] = json_encode($validated['what_state_anicipate_service']);
+        }elseif(isset($validated['direct_service_business']) && is_array($validated['direct_service_business'])){
+            $validated['direct_service_business'] = json_encode($validated['direct_service_business']);
         }
          $existing_user = DB::table('parsonals')->where('id', $request->parsonal_id)->first();
 
@@ -76,7 +78,6 @@ class IntekInformationController extends Controller
             }
         }
     }
-
 
     public function appointment_info(AppointmentRequest $request)
     {

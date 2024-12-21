@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('business_registe_red_secretary_state');
             $table->json('what_state_your_business_registered');
             $table->string('owns_the_company');
-            $table->string('direct_service_business');
+            $table->json('direct_service_business');
             $table->json('what_state_anicipate_service');
             $table->string('tier_service_interrested');
             $table->string('how_many_client_patients_service_month');
