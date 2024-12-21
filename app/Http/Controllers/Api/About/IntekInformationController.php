@@ -19,6 +19,7 @@ class IntekInformationController extends Controller
 {
     public function parsonal_info(Request $request)
     {
+        // return $request;
         $email = $request->email;
         $valiteUser = Parsonal::where('email', $email)->first();
         $validated = $request->validate([
@@ -58,6 +59,8 @@ class IntekInformationController extends Controller
         }
         elseif (isset($validated['what_state_anicipate_service']) && is_array($validated['what_state_anicipate_service'])) {
             $validated['what_state_anicipate_service'] = json_encode($validated['what_state_anicipate_service']);
+        }elseif(isset($validated['direct_service_business']) && is_array($validated['direct_service_business'])){
+            $validated['direct_service_business'] = json_encode($validated['direct_service_business']);
         }
          $existing_user = DB::table('parsonals')->where('id', $request->parsonal_id)->first();
 
@@ -69,8 +72,8 @@ class IntekInformationController extends Controller
             if ($inserted_id) {
                 $new_data = DB::table('buisness_infos')->where('id', $inserted_id)->first();
 
-                Mail::to('signup@FindaMD4Me.com')->send(new PersonalInfoMail($existing_user->first_name, $existing_user->last_name,$existing_user->email, $existing_user->phone));
-                return response()->json(['status'=>200,'message' => 'Data inserted successfully', 'data' => $new_data], 201);
+                // Mail::to('signup@FindaMD4Me.com')->send(new PersonalInfoMail($existing_user->first_name, $existing_user->last_name,$existing_user->email, $existing_user->phone));
+                // return response()->json(['status'=>200,'message' => 'Data inserted successfully', 'data' => $new_data], 201);
             } else {
                 return response()->json([ 'status'=>500,'message' => 'Data insertion failed'], 500);
             }

@@ -184,8 +184,6 @@ class UserController extends Controller
             return response()->json(['status'=>200,'message' => 'Password reset successfully','data'=> $user], 200);
         }
     }
-
-
     public function loginUser(Request $request)
     {
     $credentials = $request->only('email', 'password');
