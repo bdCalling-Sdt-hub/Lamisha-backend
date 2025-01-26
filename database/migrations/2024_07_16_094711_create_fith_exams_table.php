@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('fith_exams', function (Blueprint $table) {
             $table->id();
-            $table->string('question');
-            $table->string('answare');
+            $table->longText('question');
+            $table->longText('answare');
             $table->timestamps();
         });
     }

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('e_h_r_s', function (Blueprint $table) {
             $table->id();
-            $table->string('question');
-            $table->string('answare');
+            $table->longText('question');
+            $table->longText('answare');
             $table->timestamps();
         });
     }

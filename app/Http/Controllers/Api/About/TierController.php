@@ -90,6 +90,7 @@ class TierController extends Controller
             Log::error('Tier update error: ', ['error' => $e->getMessage()]);
             return response()->json(['error' => 'An error occurred while updating tiers.'], 500);
         }
+
     }
 
     public function show_tiear()
@@ -120,7 +121,7 @@ public function client_tier()
             return response()->json(['status' => 400, 'message' => 'Please fill out your business information'], 400);
         }
         $tierId = $buisnessInfo->tier_service_interrested;
-        $tiers = Tier::where('tyer_name', '<=', $tierId)->orderBy('id', 'desc')->get();
+        $tiers = Tier::where('tyer_name', '<=', $tierId)->orderBy('id', 'asc')->get();
         if (!$tiers) {
             return response()->json(['status' => 400, 'message' => 'Tier information not found'], 400);
         }
